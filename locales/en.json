@@ -132,7 +132,7 @@
         "botNotifySourcePath": "*Source Path:* %s",
         "botNotifySource Folder": "*Source Folder:* %s",
         "botNotifyDestination": "*Destination:* %s",
-        "SonarrDone": " - *Done*",
+        "SonarrDone": " - *Downloaded*",
         "globalAborted": "Aborted",
         "globalArrowYes": "➸ Yes",
         "globalArrowNo": "➸ No",
