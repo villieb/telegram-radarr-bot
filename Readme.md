@@ -1,8 +1,8 @@
-**Unfortunately I don't use Telegram anymore and won't be providing updates for this, however, I'll still accept PRs.**
+**This is a port of the Sonarr telegram bot, it is still a work in progress and many functions do not work. Do not use this on a machine that has nuclear launch codes.**
 
-# telegram-sonarr-bot
+# telegram-radarr-bot
 
-Bot which lets you or others add series to [Sonarr](https://sonarr.tv/) via the messaging service [Telegram](https://telegram.org/).
+Bot which lets you or others add series to [Radarr](https://radarr.video/) via the messaging service [Telegram](https://telegram.org/).
 
 Contact [@BotFather](http://telegram.me/BotFather) on Telegram to create and get a bot token.
 
