@@ -233,7 +233,7 @@ SonarrMessage.prototype.sendSeriesList = function(seriesName) {
 
   logger.info(i18n.__('logSonarrQueryCommandSent', self.username));
 
-  self.sonarr.get('series/lookup', { 'term': seriesName }).then(function(result) {
+  self.sonarr.get('movie/lookup', { 'term': seriesName }).then(function(result) {
     if (!result.length) {
       throw new Error(i18n.__('errorSonarrSerieNotFound', seriesName));
     }
@@ -257,6 +257,8 @@ SonarrMessage.prototype.sendSeriesList = function(seriesName) {
         }
       });
 
+      console.log(n);
+
       var id = key + 1;
       var keyboardValue = n.title + (n.year ? ' - ' + n.year : '');
 
@@ -265,7 +267,7 @@ SonarrMessage.prototype.sendSeriesList = function(seriesName) {
         'title': n.title,
         'plot': n.overview,
         'year': n.year,
-        'tvdbId': n.tvdbId,
+        'tvdbId': n.tmdbId,
         'titleSlug': n.titleSlug,
         'seasons': n.seasons,
         'keyboardValue': keyboardValue,
@@ -274,7 +276,7 @@ SonarrMessage.prototype.sendSeriesList = function(seriesName) {
 
       keyboardList.push([keyboardValue]);
 
-      response.push('➸ ['+keyboardValue+'](http://thetvdb.com/?tab=series&id='+n.tvdbId+')');
+      response.push('➸ ['+keyboardValue+'](https://www.themoviedb.org/movie/'+n.tmdbId+')');
     });
 
     response.push(i18n.__('selectFromMenu'));
@@ -310,17 +312,18 @@ SonarrMessage.prototype.confirmShowSelect = function(displayName) {
   var workflow = new (require('events').EventEmitter)();
 
   // check for existing series on sonarr
+  // @todo fix existing check
   workflow.on('checkSonarrSeries', function () {
-    self.sonarr.get('series').then(function(result) {
-      logger.info(i18n.__('logSonarrLookingForExistingSeries', self.username));
+    self.sonarr.get('movie').then(function(result) {
+  //     logger.info(i18n.__('logSonarrLookingForExistingSeries', self.username));
 
-      var existingSeries = _.filter(result, function(item) { return item.tvdbId === series.tvdbId; })[0];
-      if (existingSeries) {
-        throw new Error(i18n.__('errorSonarrSerieAlreadyTracked'));
-      }
+  //     var existingSeries = _.filter(result, function(item) { return item.tvdbId === series.tmdbId; })[0];
+  //     if (existingSeries) {
+  //       throw new Error(i18n.__('errorSonarrSerieAlreadyTracked'));
+  //     }
       workflow.emit('confirmShow');
-    }).catch(function(error) {
-      return self._sendMessage(error);
+  //   }).catch(function(error) {
+  //     return self._sendMessage(error);
     });
   });
 
@@ -412,7 +415,7 @@ SonarrMessage.prototype.sendProfileList = function(displayName) {
       logger.info(i18n.__('logSonarrFoundProfile', self.username, keyboardList.join(',')));
 
       // set cache
-      self.cache.set('state' + self.user.id, state.sonarr.MONITOR);
+      self.cache.set('state' + self.user.id, state.sonarr.FOLDER);
       self.cache.set('seriesProfileList' + self.user.id, profileList);
 
       return self._sendMessage(response.join('\n'), keyboardList);
@@ -428,108 +431,108 @@ SonarrMessage.prototype.sendProfileList = function(displayName) {
   workflow.emit('getSonarrProfiles');
 };
 
-SonarrMessage.prototype.sendMonitorList = function(profileName) {
-  var self = this;
+// SonarrMessage.prototype.sendMonitorList = function(profileName) {
+//   var self = this;
 
-  var profileList = self.cache.get('seriesProfileList' + self.user.id);
-  if (!profileList) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+//   var profileList = self.cache.get('seriesProfileList' + self.user.id);
+//   if (!profileList) {
+//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+//   }
 
-  var profile = _.filter(profileList, function(item) { return item.name === profileName; })[0];
-  if (!profile) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+//   var profile = _.filter(profileList, function(item) { return item.name === profileName; })[0];
+//   if (!profile) {
+//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+//   }
 
-  logger.info(i18n.__('logSonarrMonitorListRequest', self.username));
+//   logger.info(i18n.__('logSonarrMonitorListRequest', self.username));
 
-  var monitor = ['future', 'all', 'none', 'latest', 'first'];
-  var monitorList = [], keyboardList = [], keyboardRow = [];
-  var response = [i18n.__('botChatSonarrSelectSeason')];
-  _.forEach(monitor, function(n, key) {
-    monitorList.push({ 'type': n });
+//   var monitor = ['future', 'all', 'none', 'latest', 'first'];
+//   var monitorList = [], keyboardList = [], keyboardRow = [];
+//   var response = [i18n.__('botChatSonarrSelectSeason')];
+//   _.forEach(monitor, function(n, key) {
+//     monitorList.push({ 'type': n });
 
-    response.push('➸ ' + n);
+//     response.push('➸ ' + n);
 
-    keyboardRow.push(n);
-    if (keyboardRow.length === 2) {
-      keyboardList.push(keyboardRow);
-      keyboardRow = [];
-    }
-  });
+//     keyboardRow.push(n);
+//     if (keyboardRow.length === 2) {
+//       keyboardList.push(keyboardRow);
+//       keyboardRow = [];
+//     }
+//   });
 
-  if (keyboardRow.length === 1) {
-    keyboardList.push([keyboardRow[0]]);
-  }
+//   if (keyboardRow.length === 1) {
+//     keyboardList.push([keyboardRow[0]]);
+//   }
 
-  response.push(i18n.__('selectFromMenu'));
+//   response.push(i18n.__('selectFromMenu'));
 
-  logger.info(i18n.__('logSonarrFoundMonitorType', self.username, keyboardList.join(',')));
+//   logger.info(i18n.__('logSonarrFoundMonitorType', self.username, keyboardList.join(',')));
 
-  self.cache.set('seriesProfileId' + self.user.id, profile.profileId);
-  self.cache.set('seriesMonitorList' + self.user.id, monitorList);
-  self.cache.set('state' + self.user.id, state.sonarr.TYPE);
+//   self.cache.set('seriesProfileId' + self.user.id, profile.profileId);
+//   self.cache.set('seriesMonitorList' + self.user.id, monitorList);
+//   self.cache.set('state' + self.user.id, state.sonarr.TYPE);
 
-  return self._sendMessage(response.join('\n'), keyboardList);
-};
+//   return self._sendMessage(response.join('\n'), keyboardList);
+// };
 
-SonarrMessage.prototype.sendTypeList = function(monitorName) {
-  var self = this;
+// SonarrMessage.prototype.sendTypeList = function(monitorName) {
+//   var self = this;
 
-  var monitorList = self.cache.get('seriesMonitorList' + self.user.id);
-  if (!monitorList) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+//   var monitorList = self.cache.get('seriesMonitorList' + self.user.id);
+//   if (!monitorList) {
+//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+//   }
 
-  var monitor = _.filter(monitorList, function(item) { return item.type === monitorName; })[0];
-  if (!monitor) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+//   var monitor = _.filter(monitorList, function(item) { return item.type === monitorName; })[0];
+//   if (!monitor) {
+//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+//   }
 
-  logger.info(i18n.__('logSonarrUserSeriesTypeRequested', self.username));
+//   logger.info(i18n.__('logSonarrUserSeriesTypeRequested', self.username));
 
-  var type = ['standard', 'airs daily', 'anime'];
-  var typeList = [], keyboardList = [], keyboardRow = [];
-  var response = [i18n.__('selectSeriesType')];
-  _.forEach(type, function(n, key) {
-    typeList.push({ 'type': n });
+//   var type = ['standard', 'airs daily', 'anime'];
+//   var typeList = [], keyboardList = [], keyboardRow = [];
+//   var response = [i18n.__('selectSeriesType')];
+//   _.forEach(type, function(n, key) {
+//     typeList.push({ 'type': n });
 
-    response.push('➸ ' + n);
+//     response.push('➸ ' + n);
 
-    keyboardRow.push(n);
-    if (keyboardRow.length === 2) {
-      keyboardList.push(keyboardRow);
-      keyboardRow = [];
-    }
-  });
+//     keyboardRow.push(n);
+//     if (keyboardRow.length === 2) {
+//       keyboardList.push(keyboardRow);
+//       keyboardRow = [];
+//     }
+//   });
 
-  if (keyboardRow.length === 1) {
-    keyboardList.push([keyboardRow[0]]);
-  }
+//   if (keyboardRow.length === 1) {
+//     keyboardList.push([keyboardRow[0]]);
+//   }
 
-  response.push(i18n.__('selectFromMenu'));
+//   response.push(i18n.__('selectFromMenu'));
 
-  logger.info(i18n.__('logSonarrFoundSeriesType', self.username, keyboardList.join(',')));
+//   logger.info(i18n.__('logSonarrFoundSeriesType', self.username, keyboardList.join(',')));
 
-  self.cache.set('seriesMonitorId' + self.user.id, monitor.type);
-  self.cache.set('seriesTypeList' + self.user.id, typeList);
-  self.cache.set('state' + self.user.id, state.sonarr.FOLDER);
+//   self.cache.set('seriesMonitorId' + self.user.id, monitor.type);
+//   self.cache.set('seriesTypeList' + self.user.id, typeList);
+//   self.cache.set('state' + self.user.id, state.sonarr.FOLDER);
 
-  return self._sendMessage(response.join('\n'), keyboardList);
-};
+//   return self._sendMessage(response.join('\n'), keyboardList);
+// };
 
 SonarrMessage.prototype.sendFolderList = function(typeName) {
   var self = this;
 
-  var typeList = self.cache.get('seriesTypeList' + self.user.id);
-  if (!typeList) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+  // var typeList = self.cache.get('seriesTypeList' + self.user.id);
+  // if (!typeList) {
+  //   return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  // }
 
-  var type = _.filter(typeList, function(item) { return item.type === typeName; })[0];
-  if (!type) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+  // var type = _.filter(typeList, function(item) { return item.type === typeName; })[0];
+  // if (!type) {
+  //   return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  // }
 
   self.sonarr.get('rootfolder').then(function(result) {
     if (!result.length) {
@@ -554,9 +557,9 @@ SonarrMessage.prototype.sendFolderList = function(typeName) {
     logger.info(i18n.__('logSonarrFoundFolders', self.username, keyboardList.join(',')));
 
     // set cache
-    self.cache.set('seriesTypeId' + self.user.id, type.type);
+    // self.cache.set('seriesTypeId' + self.user.id, type.type);
     self.cache.set('seriesFolderList' + self.user.id, folderList);
-    self.cache.set('state' + self.user.id, state.sonarr.SEASON_FOLDER);
+    self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
 
     return self._sendMessage(response.join('\n'), keyboardList);
   })
@@ -565,53 +568,58 @@ SonarrMessage.prototype.sendFolderList = function(typeName) {
   });
 };
 
-SonarrMessage.prototype.sendSeasonFolderList = function(folderName) {
-  var self = this;
+// SonarrMessage.prototype.sendSeasonFolderList = function(folderName) {
+//   var self = this;
 
-  var folderList = self.cache.get('seriesFolderList' + self.user.id);
-  if (!folderList) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+//   var folderList = self.cache.get('seriesFolderList' + self.user.id);
+//   if (!folderList) {
+//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+//   }
 
-  var folder = _.filter(folderList, function(item) { return item.path === folderName; })[0];
-  if (!folder) {
-    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+//   var folder = _.filter(folderList, function(item) { return item.path === folderName; })[0];
+//   if (!folder) {
+//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+//   }
 
-  logger.info(i18n.__('logSonarrSeasonFoldersListRequested', self.username));
+//   logger.info(i18n.__('logSonarrSeasonFoldersListRequested', self.username));
 
-  var seasonFolder = [i18n.__('globalYes'), i18n.__('globalNo')];
-  var seasonFolderList = [], keyboardList = [], keyboardRow = [];
-  var response = [i18n.__('askUsingSeasonFolders')];
-  _.forEach(seasonFolder, function(n, key) {
-    seasonFolderList.push({ 'type': n });
+//   var seasonFolder = [i18n.__('globalYes'), i18n.__('globalNo')];
+//   var seasonFolderList = [], keyboardList = [], keyboardRow = [];
+//   var response = [i18n.__('askUsingSeasonFolders')];
+//   _.forEach(seasonFolder, function(n, key) {
+//     seasonFolderList.push({ 'type': n });
 
-    response.push('➸ ' + n);
+//     response.push('➸ ' + n);
 
-    keyboardRow.push(n);
-    if (keyboardRow.length === 2) {
-      keyboardList.push(keyboardRow);
-      keyboardRow = [];
-    }
-  });
+//     keyboardRow.push(n);
+//     if (keyboardRow.length === 2) {
+//       keyboardList.push(keyboardRow);
+//       keyboardRow = [];
+//     }
+//   });
 
-  if (keyboardRow.length === 1) {
-    keyboardList.push([keyboardRow[0]]);
-  }
+//   if (keyboardRow.length === 1) {
+//     keyboardList.push([keyboardRow[0]]);
+//   }
 
-  response.push(i18n.__('selectFromMenu'));
+//   response.push(i18n.__('selectFromMenu'));
 
-    logger.info(i18n.__('logSonarrFoundSeasonsFolderTypes', self.username, keyboardList.join(',')));
+//     logger.info(i18n.__('logSonarrFoundSeasonsFolderTypes', self.username, keyboardList.join(',')));
 
-  self.cache.set('seriesFolderId' + self.user.id, folder.folderId);
-  self.cache.set('seriesSeasonFolderList' + self.user.id, seasonFolderList);
-  self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
+//   self.cache.set('seriesFolderId' + self.user.id, folder.folderId);
+//   self.cache.set('seriesSeasonFolderList' + self.user.id, seasonFolderList);
+//   self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
 
-  return self._sendMessage(response.join('\n'), keyboardList);
-};
+//   return self._sendMessage(response.join('\n'), keyboardList);
+// };
 
 SonarrMessage.prototype.sendAddSeries = function(seasonFolderName) {
+
+  logger.info("something is running...");
+
   var self = this;
+
+  logger.info(self.cache);
 
   var seriesId         = self.cache.get('seriesId' + self.user.id);
   var seriesList       = self.cache.get('seriesList' + self.user.id);
@@ -623,84 +631,107 @@ SonarrMessage.prototype.sendAddSeries = function(seasonFolderName) {
   var typeList         = self.cache.get('seriesTypeList' + self.user.id);
   var folderId         = self.cache.get('seriesFolderId' + self.user.id);
   var folderList       = self.cache.get('seriesFolderList' + self.user.id);
-  var seasonFolderId   = seasonFolderName;
-  var seasonFolderList = self.cache.get('seriesSeasonFolderList' + self.user.id);
 
-  if (!seasonFolderList) {
-    self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+  logger.info("checkpoint 1");
+
+  // var seasonFolderId   = seasonFolderName;
+  // var seasonFolderList = self.cache.get('seriesSeasonFolderList' + self.user.id);
+
+  // if (!seasonFolderList) {
+  //   self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  // }
 
   var series       = _.filter(seriesList, function(item) { return item.id === seriesId; })[0];
-  var profile      = _.filter(profileList, function(item) { return item.profileId === profileId; })[0];
+  var profile      = _.filter(profileList, function(item) { return item.profileId })[0];
   var monitor      = _.filter(monitorList, function(item) { return item.type === monitorId; })[0];
   var type         = _.filter(typeList, function(item) { return item.type === typeId; })[0];
-  var folder       = _.filter(folderList, function(item) { return item.folderId === folderId; })[0];
-  var seasonFolder = _.filter(seasonFolderList, function(item) { return item.type === seasonFolderId; })[0];
+  var folder       = _.filter(folderList, function(item) { console.log(item.path); return item.path; })[0];
+  // var seasonFolder = _.filter(seasonFolderList, function(item) { return item.type === seasonFolderId; })[0];
+  console.log('profile:' + profile);
+  console.log('folder:' + folder);
+  logger.info(profile);
+  logger.info(folder);
+
+  logger.info("checkpoint 2");
 
   var postOpts              = {};
-  postOpts.tvdbId           = series.tvdbId;
+  logger.info("checkpoint 2.1");
+  postOpts.tmdbId           = series.tvdbId;
+  logger.info("checkpoint 2.2");
   postOpts.title            = series.title;
+  logger.info("checkpoint 2.3");
   postOpts.titleSlug        = series.titleSlug;
+  logger.info("checkpoint 2.4");
   postOpts.rootFolderPath   = folder.path;
-  postOpts.seasonFolder     = (seasonFolder.type === i18n.__("globalYes") ? true : false);
+  logger.info("checkpoint 2.5");
+  // postOpts.seasonFolder     = (seasonFolder.type === i18n.__("globalYes") ? true : false);
   postOpts.monitored        = true;
-  postOpts.seriesType       = (type.type === 'airs daily' ? 'daily' : type.type);
+  logger.info("checkpoint 2.6");
+  // postOpts.seriesType       = (type.type === 'airs daily' ? 'daily' : type.type);
   postOpts.qualityProfileId = profile.profileId;
+  logger.info("checkpoint 2.7");
   postOpts.images           = [];
 
-  var lastSeason  = _.max(series.seasons, 'seasonNumber');
-  var firstSeason = _.min(_.reject(series.seasons, { seasonNumber: 0 }), 'seasonNumber');
+  logger.info("checkpoint 3");
+  console.log('postOpts:' + postOpts);
 
-  switch (monitor.type) {
-    case 'future':
-      postOpts.ignoreEpisodesWithFiles = true;
-      postOpts.ignoreEpisodesWithoutFiles = true;
-      break;
-    case 'all':
-      postOpts.ignoreEpisodesWithFiles = false;
-      postOpts.ignoreEpisodesWithoutFiles = false;
+  // var lastSeason  = _.max(series.seasons, 'seasonNumber');
+  // var firstSeason = _.min(_.reject(series.seasons, { seasonNumber: 0 }), 'seasonNumber');
 
-      _.each(series.seasons, function(season) {
-        if (season.seasonNumber !== 0) {
-          season.monitored = true;
-        } else {
-          season.monitored = false;
-        }
-      });
-      break;
-    case 'none':
-      _.each(series.seasons, function(season) {
-        season.monitored = false;
-      });
-      break;
-    case 'latest':
-      _.each(series.seasons, function(season) {
-        if (season.seasonNumber === lastSeason.seasonNumber) {
-          season.monitored = true;
-        } else {
-          season.monitored = false;
-        }
-      });
-      break;
-    case 'first':
-      _.each(series.seasons, function(season) {
-        if (season.seasonNumber === firstSeason.seasonNumber) {
-          season.monitored = true;
-        } else {
-          season.monitored = false;
-        }
-      });
-      break;
-    default:
-      self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  }
+  // switch (monitor.type) {
+  //   case 'future':
+  //     postOpts.ignoreEpisodesWithFiles = true;
+  //     postOpts.ignoreEpisodesWithoutFiles = true;
+  //     break;
+  //   case 'all':
+  //     postOpts.ignoreEpisodesWithFiles = false;
+  //     postOpts.ignoreEpisodesWithoutFiles = false;
 
-  // update seasons to be monitored
-  postOpts.seasons = series.seasons;
+  //     _.each(series.seasons, function(season) {
+  //       if (season.seasonNumber !== 0) {
+  //         season.monitored = true;
+  //       } else {
+  //         season.monitored = false;
+  //       }
+  //     });
+  //     break;
+  //   case 'none':
+  //     _.each(series.seasons, function(season) {
+  //       season.monitored = false;
+  //     });
+  //     break;
+  //   case 'latest':
+  //     _.each(series.seasons, function(season) {
+  //       if (season.seasonNumber === lastSeason.seasonNumber) {
+  //         season.monitored = true;
+  //       } else {
+  //         season.monitored = false;
+  //       }
+  //     });
+  //     break;
+  //   case 'first':
+  //     _.each(series.seasons, function(season) {
+  //       if (season.seasonNumber === firstSeason.seasonNumber) {
+  //         season.monitored = true;
+  //       } else {
+  //         season.monitored = false;
+  //       }
+  //     });
+  //     break;
+  //   default:
+  //     self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  // }
+
+  // // update seasons to be monitored
+  // postOpts.seasons = series.seasons;
+
+  logger.info("checkpoint 4");
 
   logger.info(i18n.__("logSonarrSerieAddedWithOptions", self.username, series.title, JSON.stringify(postOpts)));
+  console.log('send message to Radarr');
 
-  self.sonarr.post('series', postOpts).then(function(result) {
+  self.sonarr.post('movie', postOpts).then(function(result) {
+    logger.info(result);
     if (!result) {
       throw new Error(i18n.__("logSonarrSerieCantAdd"));
     }
