@@ -111,7 +111,7 @@ bot.on('message', function(msg) {
 
   if (/^\/upcoming\s?(\d+)?$/g.test(message)) {
     if(isAuthorized(user.id)){
-      var futureDays = /^\/upcoming\s?(\d+)?/g.exec(message)[1] || 3;
+      var futureDays = /^\/upcoming\s?(\d+)?/g.exec(message)[1] || 30;
       return sonarr.performCalendarSearch(futureDays);
     } else {
        return replyWithError(user.id, new Error(i18n.__('notAuthorized')));
