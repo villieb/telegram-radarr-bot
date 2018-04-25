@@ -17,7 +17,7 @@ Getting Started
 
 ```bash
 # Clone the repository
-git clone https://github.com/onedr0p/telegram-sonarr-bot
+git clone https://github.com/imran0/telegram-radarr-bot
 ```
 
 ```bash
