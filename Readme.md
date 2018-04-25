@@ -1,4 +1,4 @@
-**This is a port of the Sonarr telegram bot, it is still a work in progress and many functions do not work. Do not use this on a machine that has nuclear launch codes.**
+**This is a port of the Sonarr telegram bot, it is still a work in progress and many functions do not work. Do not use this on a machine that has nuclear launch codes. Even this readme is a work in progress!**
 
 # telegram-radarr-bot
 
@@ -22,7 +22,7 @@ git clone https://github.com/imran0/telegram-radarr-bot
 
 ```bash
 # Install dependencies
-cd telegram-sonarr-bot
+cd telegram-radarr-bot
 npm install
 ```
 
@@ -46,7 +46,7 @@ Bot:
 - **owner** your Telegram user ID. (you can fill this in later)
 - **notifyId** Telegram ID used for notifications. (optional; you can fill this in later)
 
-Sonarr:
+Radarr:
 - **hostname**: hostname where Sonarr runs (required)
 - **apiKey**: Your API to access Sonarr (required)
 - **port**: port number Sonarr is listening on (optional, default: 5050)
@@ -59,7 +59,7 @@ Sonarr:
 
 ```bash
 # Start the bot
-node sonarr.js
+node radarr.js
 ```
 
 ## Usage (commands)
