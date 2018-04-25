@@ -406,6 +406,8 @@ SonarrMessage.prototype.sendProfileList = function(displayName) {
         }
       });
 
+      // console.log(profiles);
+
       if (keyboardRow.length === 1) {
         keyboardList.push([keyboardRow[0]]);
       }
@@ -521,8 +523,23 @@ SonarrMessage.prototype.sendProfileList = function(displayName) {
 //   return self._sendMessage(response.join('\n'), keyboardList);
 // };
 
-SonarrMessage.prototype.sendFolderList = function(typeName) {
+SonarrMessage.prototype.sendFolderList = function(profileName) {
   var self = this;
+
+  logger.info('we got to the folder list function');
+
+    var profileList = self.cache.get('seriesProfileList' + self.user.id);
+    if (!profileList) {
+      return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+    }
+    logger.info('passed first check');
+
+    var profile = _.filter(profileList, function(item) { return item.name === profileName; })[0];
+    if (!profile) {
+      return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+    }
+    logger.info('passed second check');
+
 
   // var typeList = self.cache.get('seriesTypeList' + self.user.id);
   // if (!typeList) {
@@ -534,6 +551,7 @@ SonarrMessage.prototype.sendFolderList = function(typeName) {
   //   return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
   // }
 
+  logger.info('about to go next...');
   self.sonarr.get('rootfolder').then(function(result) {
     if (!result.length) {
       throw new Error(i18n.__("errorSonarrCouldntFindFolders"));
@@ -558,6 +576,7 @@ SonarrMessage.prototype.sendFolderList = function(typeName) {
 
     // set cache
     // self.cache.set('seriesTypeId' + self.user.id, type.type);
+    self.cache.set('seriesProfileId' + self.user.id, profile.profileId);
     self.cache.set('seriesFolderList' + self.user.id, folderList);
     self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
 
@@ -613,13 +632,17 @@ SonarrMessage.prototype.sendFolderList = function(typeName) {
 //   return self._sendMessage(response.join('\n'), keyboardList);
 // };
 
-SonarrMessage.prototype.sendAddSeries = function(seasonFolderName) {
-
-  logger.info("something is running...");
-
+SonarrMessage.prototype.sendAddSeries = function(folderName) {
   var self = this;
 
-  logger.info(self.cache);
+  var folderList = self.cache.get('seriesFolderList' + self.user.id);
+  var folder = _.filter(folderList, function(item) { return item.path === folderName; })[0];
+  if (!folder) {
+    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  }
+  self.cache.set('seriesFolderId' + self.user.id, folder.folderId);
+
+
 
   var seriesId         = self.cache.get('seriesId' + self.user.id);
   var seriesList       = self.cache.get('seriesList' + self.user.id);
@@ -630,8 +653,9 @@ SonarrMessage.prototype.sendAddSeries = function(seasonFolderName) {
   var typeId           = self.cache.get('seriesTypeId' + self.user.id);
   var typeList         = self.cache.get('seriesTypeList' + self.user.id);
   var folderId         = self.cache.get('seriesFolderId' + self.user.id);
-  var folderList       = self.cache.get('seriesFolderList' + self.user.id);
+  // var folderList       = self.cache.get('seriesFolderList' + self.user.id);
 
+  logger.info(profileId);
   logger.info("checkpoint 1");
 
   // var seasonFolderId   = seasonFolderName;
@@ -642,15 +666,15 @@ SonarrMessage.prototype.sendAddSeries = function(seasonFolderName) {
   // }
 
   var series       = _.filter(seriesList, function(item) { return item.id === seriesId; })[0];
-  var profile      = _.filter(profileList, function(item) { return item.profileId })[0];
+  var profile      = _.filter(profileList, function(item) { return item.profileId === profileId; })[0];
   var monitor      = _.filter(monitorList, function(item) { return item.type === monitorId; })[0];
   var type         = _.filter(typeList, function(item) { return item.type === typeId; })[0];
-  var folder       = _.filter(folderList, function(item) { console.log(item.path); return item.path; })[0];
+  var folder       = _.filter(folderList, function(item) { return item.folderId === folderId; })[0];
   // var seasonFolder = _.filter(seasonFolderList, function(item) { return item.type === seasonFolderId; })[0];
   console.log('profile:' + profile);
-  console.log('folder:' + folder);
+  // console.log('folder:' + folder);
   logger.info(profile);
-  logger.info(folder);
+  // logger.info(folder);
 
   logger.info("checkpoint 2");
 
@@ -674,56 +698,6 @@ SonarrMessage.prototype.sendAddSeries = function(seasonFolderName) {
 
   logger.info("checkpoint 3");
   console.log('postOpts:' + postOpts);
-
-  // var lastSeason  = _.max(series.seasons, 'seasonNumber');
-  // var firstSeason = _.min(_.reject(series.seasons, { seasonNumber: 0 }), 'seasonNumber');
-
-  // switch (monitor.type) {
-  //   case 'future':
-  //     postOpts.ignoreEpisodesWithFiles = true;
-  //     postOpts.ignoreEpisodesWithoutFiles = true;
-  //     break;
-  //   case 'all':
-  //     postOpts.ignoreEpisodesWithFiles = false;
-  //     postOpts.ignoreEpisodesWithoutFiles = false;
-
-  //     _.each(series.seasons, function(season) {
-  //       if (season.seasonNumber !== 0) {
-  //         season.monitored = true;
-  //       } else {
-  //         season.monitored = false;
-  //       }
-  //     });
-  //     break;
-  //   case 'none':
-  //     _.each(series.seasons, function(season) {
-  //       season.monitored = false;
-  //     });
-  //     break;
-  //   case 'latest':
-  //     _.each(series.seasons, function(season) {
-  //       if (season.seasonNumber === lastSeason.seasonNumber) {
-  //         season.monitored = true;
-  //       } else {
-  //         season.monitored = false;
-  //       }
-  //     });
-  //     break;
-  //   case 'first':
-  //     _.each(series.seasons, function(season) {
-  //       if (season.seasonNumber === firstSeason.seasonNumber) {
-  //         season.monitored = true;
-  //       } else {
-  //         season.monitored = false;
-  //       }
-  //     });
-  //     break;
-  //   default:
-  //     self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  // }
-
-  // // update seasons to be monitored
-  // postOpts.seasons = series.seasons;
 
   logger.info("checkpoint 4");
 
