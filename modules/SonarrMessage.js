@@ -433,125 +433,19 @@ SonarrMessage.prototype.sendProfileList = function(displayName) {
   workflow.emit('getSonarrProfiles');
 };
 
-// SonarrMessage.prototype.sendMonitorList = function(profileName) {
-//   var self = this;
-
-//   var profileList = self.cache.get('seriesProfileList' + self.user.id);
-//   if (!profileList) {
-//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-//   }
-
-//   var profile = _.filter(profileList, function(item) { return item.name === profileName; })[0];
-//   if (!profile) {
-//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-//   }
-
-//   logger.info(i18n.__('logSonarrMonitorListRequest', self.username));
-
-//   var monitor = ['future', 'all', 'none', 'latest', 'first'];
-//   var monitorList = [], keyboardList = [], keyboardRow = [];
-//   var response = [i18n.__('botChatSonarrSelectSeason')];
-//   _.forEach(monitor, function(n, key) {
-//     monitorList.push({ 'type': n });
-
-//     response.push('➸ ' + n);
-
-//     keyboardRow.push(n);
-//     if (keyboardRow.length === 2) {
-//       keyboardList.push(keyboardRow);
-//       keyboardRow = [];
-//     }
-//   });
-
-//   if (keyboardRow.length === 1) {
-//     keyboardList.push([keyboardRow[0]]);
-//   }
-
-//   response.push(i18n.__('selectFromMenu'));
-
-//   logger.info(i18n.__('logSonarrFoundMonitorType', self.username, keyboardList.join(',')));
-
-//   self.cache.set('seriesProfileId' + self.user.id, profile.profileId);
-//   self.cache.set('seriesMonitorList' + self.user.id, monitorList);
-//   self.cache.set('state' + self.user.id, state.sonarr.TYPE);
-
-//   return self._sendMessage(response.join('\n'), keyboardList);
-// };
-
-// SonarrMessage.prototype.sendTypeList = function(monitorName) {
-//   var self = this;
-
-//   var monitorList = self.cache.get('seriesMonitorList' + self.user.id);
-//   if (!monitorList) {
-//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-//   }
-
-//   var monitor = _.filter(monitorList, function(item) { return item.type === monitorName; })[0];
-//   if (!monitor) {
-//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-//   }
-
-//   logger.info(i18n.__('logSonarrUserSeriesTypeRequested', self.username));
-
-//   var type = ['standard', 'airs daily', 'anime'];
-//   var typeList = [], keyboardList = [], keyboardRow = [];
-//   var response = [i18n.__('selectSeriesType')];
-//   _.forEach(type, function(n, key) {
-//     typeList.push({ 'type': n });
-
-//     response.push('➸ ' + n);
-
-//     keyboardRow.push(n);
-//     if (keyboardRow.length === 2) {
-//       keyboardList.push(keyboardRow);
-//       keyboardRow = [];
-//     }
-//   });
-
-//   if (keyboardRow.length === 1) {
-//     keyboardList.push([keyboardRow[0]]);
-//   }
-
-//   response.push(i18n.__('selectFromMenu'));
-
-//   logger.info(i18n.__('logSonarrFoundSeriesType', self.username, keyboardList.join(',')));
-
-//   self.cache.set('seriesMonitorId' + self.user.id, monitor.type);
-//   self.cache.set('seriesTypeList' + self.user.id, typeList);
-//   self.cache.set('state' + self.user.id, state.sonarr.FOLDER);
-
-//   return self._sendMessage(response.join('\n'), keyboardList);
-// };
-
 SonarrMessage.prototype.sendFolderList = function(profileName) {
   var self = this;
 
-  logger.info('we got to the folder list function');
+  var profileList = self.cache.get('seriesProfileList' + self.user.id);
+  if (!profileList) {
+    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  }
 
-    var profileList = self.cache.get('seriesProfileList' + self.user.id);
-    if (!profileList) {
-      return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-    }
-    logger.info('passed first check');
+  var profile = _.filter(profileList, function(item) { return item.name === profileName; })[0];
+  if (!profile) {
+    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  }
 
-    var profile = _.filter(profileList, function(item) { return item.name === profileName; })[0];
-    if (!profile) {
-      return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-    }
-    logger.info('passed second check');
-
-
-  // var typeList = self.cache.get('seriesTypeList' + self.user.id);
-  // if (!typeList) {
-  //   return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  // }
-
-  // var type = _.filter(typeList, function(item) { return item.type === typeName; })[0];
-  // if (!type) {
-  //   return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  // }
-
-  logger.info('about to go next...');
   self.sonarr.get('rootfolder').then(function(result) {
     if (!result.length) {
       throw new Error(i18n.__("errorSonarrCouldntFindFolders"));
@@ -561,6 +455,7 @@ SonarrMessage.prototype.sendFolderList = function(profileName) {
 
     logger.info(i18n.__('logSonarrFolderListRequested', self.username));
 
+    
     var folderList = [], keyboardList = [];
     var response = ['*Found ' + folders.length + ' folders*'];
     _.forEach(folders, function(n, key) {
@@ -570,25 +465,38 @@ SonarrMessage.prototype.sendFolderList = function(profileName) {
 
       keyboardList.push([n.path]);
     });
+
+    // set cache
+    self.cache.set('seriesProfileId' + self.user.id, profile.profileId);
+    self.cache.set('seriesFolderList' + self.user.id, folderList);
+
+    // if only 1 folder found skip folder selection
+    if(folders.length == 0) {
+      logger.info('only one folder found, skipping selection');
+      logger.info(folders[0].path);
+      self.cache.set('seriesFolderId' + self.user.id, folders[0].path);
+      SonarrMessage.prototype.searchForMovie.call(self, folders[0].path);
+      return null;
+    }
+
+    self.cache.set('state' + self.user.id, state.sonarr.SEARCH_NOW);
+
     response.push(i18n.__('selectFromMenu'));
 
     logger.info(i18n.__('logSonarrFoundFolders', self.username, keyboardList.join(',')));
 
-    // set cache
-    // self.cache.set('seriesTypeId' + self.user.id, type.type);
-    self.cache.set('seriesProfileId' + self.user.id, profile.profileId);
-    self.cache.set('seriesFolderList' + self.user.id, folderList);
-    self.cache.set('state' + self.user.id, state.sonarr.SEARCH_NOW);
-
     return self._sendMessage(response.join('\n'), keyboardList);
   })
   .catch(function(error) {
+    logger.info('something happened in this one');
     return self._sendMessage(error);
   });
 };
 
 SonarrMessage.prototype.searchForMovie = function(folderName) {
   var self = this;
+
+  logger.info('running search for movie');
 
   var folderList = self.cache.get('seriesFolderList' + self.user.id);
   if (!folderList) {
@@ -625,6 +533,7 @@ SonarrMessage.prototype.searchForMovie = function(folderName) {
 
     logger.info(i18n.__('logSonarrFoundSeasonsFolderTypes', self.username, keyboardList.join(',')));
 
+
   self.cache.set('seriesFolderId' + self.user.id, folder.folderId);
   self.cache.set('seriesSearchForMovieList' + self.user.id, searchForMovieList);
   self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
@@ -635,6 +544,8 @@ SonarrMessage.prototype.searchForMovie = function(folderName) {
 
 SonarrMessage.prototype.sendAddSeries = function(searchForMovie) {
   var self = this;
+
+  logger.info('run sendaddseries');
 
   var seriesId         = self.cache.get('seriesId' + self.user.id);
   var seriesList       = self.cache.get('seriesList' + self.user.id);
@@ -650,6 +561,7 @@ SonarrMessage.prototype.sendAddSeries = function(searchForMovie) {
   var searchForMovieList   = self.cache.get('seriesSearchForMovieList' + self.user.id);
 
   if (!searchForMovieList) {
+    console.log('searchForMovieList was not found');
     self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
   }
 
