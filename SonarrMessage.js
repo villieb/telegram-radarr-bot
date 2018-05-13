@@ -679,6 +679,7 @@ SonarrMessage.prototype.sendAddSeries = function(folderName) {
   logger.info("checkpoint 2");
 
   var postOpts              = {};
+  var addOptions              = {};
   logger.info("checkpoint 2.1");
   postOpts.tmdbId           = series.tvdbId;
   logger.info("checkpoint 2.2");
@@ -695,11 +696,18 @@ SonarrMessage.prototype.sendAddSeries = function(folderName) {
   postOpts.qualityProfileId = profile.profileId;
   logger.info("checkpoint 2.7");
   postOpts.images           = [];
-
   logger.info("checkpoint 3");
+
+  addOptions.searchForMovie = true;
+  postOpts.addOptions           = addOptions;
+  logger.info(addOptions);
+  console.log(addOptions);
+  logger.info("checkpoint 3.5");
   console.log('postOpts:' + postOpts);
 
   logger.info("checkpoint 4");
+  logger.info("message to send...");
+  logger.info(JSON.stringify(postOpts));  
 
   logger.info(i18n.__("logSonarrSerieAddedWithOptions", self.username, series.title, JSON.stringify(postOpts)));
   console.log('send message to Radarr');

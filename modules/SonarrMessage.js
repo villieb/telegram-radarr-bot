@@ -196,7 +196,7 @@ SonarrMessage.prototype.performCalendarSearch = function(futureDays) {
     _.forEach(episode, function(n, key) {
       logger.info('Debug6');
       var done = (n.hasFile ? i18n.__('SonarrDone') : '');
-      var niceDate = moment(n.physicalRelease).format("MMM Do YY");
+      var niceDate = moment(n.physicalRelease).format("MMM Do YYYY");
       logger.info(niceDate);
       logger.info('Debug61');
 
@@ -578,7 +578,7 @@ SonarrMessage.prototype.sendFolderList = function(profileName) {
     // self.cache.set('seriesTypeId' + self.user.id, type.type);
     self.cache.set('seriesProfileId' + self.user.id, profile.profileId);
     self.cache.set('seriesFolderList' + self.user.id, folderList);
-    self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
+    self.cache.set('state' + self.user.id, state.sonarr.SEARCH_NOW);
 
     return self._sendMessage(response.join('\n'), keyboardList);
   })
@@ -587,62 +587,54 @@ SonarrMessage.prototype.sendFolderList = function(profileName) {
   });
 };
 
-// SonarrMessage.prototype.sendSeasonFolderList = function(folderName) {
-//   var self = this;
-
-//   var folderList = self.cache.get('seriesFolderList' + self.user.id);
-//   if (!folderList) {
-//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-//   }
-
-//   var folder = _.filter(folderList, function(item) { return item.path === folderName; })[0];
-//   if (!folder) {
-//     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-//   }
-
-//   logger.info(i18n.__('logSonarrSeasonFoldersListRequested', self.username));
-
-//   var seasonFolder = [i18n.__('globalYes'), i18n.__('globalNo')];
-//   var seasonFolderList = [], keyboardList = [], keyboardRow = [];
-//   var response = [i18n.__('askUsingSeasonFolders')];
-//   _.forEach(seasonFolder, function(n, key) {
-//     seasonFolderList.push({ 'type': n });
-
-//     response.push('➸ ' + n);
-
-//     keyboardRow.push(n);
-//     if (keyboardRow.length === 2) {
-//       keyboardList.push(keyboardRow);
-//       keyboardRow = [];
-//     }
-//   });
-
-//   if (keyboardRow.length === 1) {
-//     keyboardList.push([keyboardRow[0]]);
-//   }
-
-//   response.push(i18n.__('selectFromMenu'));
-
-//     logger.info(i18n.__('logSonarrFoundSeasonsFolderTypes', self.username, keyboardList.join(',')));
-
-//   self.cache.set('seriesFolderId' + self.user.id, folder.folderId);
-//   self.cache.set('seriesSeasonFolderList' + self.user.id, seasonFolderList);
-//   self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
-
-//   return self._sendMessage(response.join('\n'), keyboardList);
-// };
-
-SonarrMessage.prototype.sendAddSeries = function(folderName) {
+SonarrMessage.prototype.searchForMovie = function(folderName) {
   var self = this;
 
   var folderList = self.cache.get('seriesFolderList' + self.user.id);
+  if (!folderList) {
+    return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  }
+
   var folder = _.filter(folderList, function(item) { return item.path === folderName; })[0];
   if (!folder) {
     return self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
   }
+
+  logger.info(i18n.__('logSonarrSeasonFoldersListRequested', self.username));
+
+  var searchForMovie = [i18n.__('globalYes'), i18n.__('globalNo')];
+  var searchForMovieList = [], keyboardList = [], keyboardRow = [];
+  var response = [i18n.__('searchForMovieNow')];
+  _.forEach(searchForMovie, function(n, key) {
+    searchForMovieList.push({ 'type': n });
+
+    response.push('➸ ' + n);
+
+    keyboardRow.push(n);
+    if (keyboardRow.length === 2) {
+      keyboardList.push(keyboardRow);
+      keyboardRow = [];
+    }
+  });
+
+  if (keyboardRow.length === 1) {
+    keyboardList.push([keyboardRow[0]]);
+  }
+
+  response.push(i18n.__('selectFromMenu'));
+
+    logger.info(i18n.__('logSonarrFoundSeasonsFolderTypes', self.username, keyboardList.join(',')));
+
   self.cache.set('seriesFolderId' + self.user.id, folder.folderId);
+  self.cache.set('seriesSearchForMovieList' + self.user.id, searchForMovieList);
+  self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
+
+  return self._sendMessage(response.join('\n'), keyboardList);
+}; 
 
 
+SonarrMessage.prototype.sendAddSeries = function(searchForMovie) {
+  var self = this;
 
   var seriesId         = self.cache.get('seriesId' + self.user.id);
   var seriesList       = self.cache.get('seriesList' + self.user.id);
@@ -653,51 +645,37 @@ SonarrMessage.prototype.sendAddSeries = function(folderName) {
   var typeId           = self.cache.get('seriesTypeId' + self.user.id);
   var typeList         = self.cache.get('seriesTypeList' + self.user.id);
   var folderId         = self.cache.get('seriesFolderId' + self.user.id);
-  // var folderList       = self.cache.get('seriesFolderList' + self.user.id);
+  var folderList       = self.cache.get('seriesFolderList' + self.user.id);
+  var searchMovieId    = searchForMovie;
+  var searchForMovieList   = self.cache.get('seriesSearchForMovieList' + self.user.id);
 
-  logger.info(profileId);
-  logger.info("checkpoint 1");
-
-  // var seasonFolderId   = seasonFolderName;
-  // var seasonFolderList = self.cache.get('seriesSeasonFolderList' + self.user.id);
-
-  // if (!seasonFolderList) {
-  //   self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
-  // }
+  if (!searchForMovieList) {
+    self._sendMessage(new Error(i18n.__('errorSonarrWentWrong')));
+  }
 
   var series       = _.filter(seriesList, function(item) { return item.id === seriesId; })[0];
   var profile      = _.filter(profileList, function(item) { return item.profileId === profileId; })[0];
   var monitor      = _.filter(monitorList, function(item) { return item.type === monitorId; })[0];
   var type         = _.filter(typeList, function(item) { return item.type === typeId; })[0];
   var folder       = _.filter(folderList, function(item) { return item.folderId === folderId; })[0];
-  // var seasonFolder = _.filter(seasonFolderList, function(item) { return item.type === seasonFolderId; })[0];
-  console.log('profile:' + profile);
-  // console.log('folder:' + folder);
-  logger.info(profile);
-  // logger.info(folder);
+  var search       = _.filter(searchForMovieList, function(item) { return item.type === searchMovieId; })[0];
 
   logger.info("checkpoint 2");
 
   var postOpts              = {};
-  logger.info("checkpoint 2.1");
+  var addOptions              = {};
+
   postOpts.tmdbId           = series.tvdbId;
-  logger.info("checkpoint 2.2");
   postOpts.title            = series.title;
-  logger.info("checkpoint 2.3");
   postOpts.titleSlug        = series.titleSlug;
-  logger.info("checkpoint 2.4");
   postOpts.rootFolderPath   = folder.path;
-  logger.info("checkpoint 2.5");
-  // postOpts.seasonFolder     = (seasonFolder.type === i18n.__("globalYes") ? true : false);
   postOpts.monitored        = true;
-  logger.info("checkpoint 2.6");
-  // postOpts.seriesType       = (type.type === 'airs daily' ? 'daily' : type.type);
   postOpts.qualityProfileId = profile.profileId;
-  logger.info("checkpoint 2.7");
   postOpts.images           = [];
 
   logger.info("checkpoint 3");
-  console.log('postOpts:' + postOpts);
+  addOptions.searchForMovie = (search.type === i18n.__("globalYes") ? true : false);
+  postOpts.addOptions       = addOptions;
 
   logger.info("checkpoint 4");
 

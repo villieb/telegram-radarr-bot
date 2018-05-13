@@ -51,6 +51,7 @@
         "botChatQueryTypeChoose": "user: %s, message: choose the type '%s'",
         "botChatQueryFolderChoose": "user: %s, message: choose the folder '%s'",
         "botChatQuerySeasonFolderChoose": "user: %s, message: choose the season folder '%s'",
+        "botChatQuerySearchNow": "user: %s, message: search movie now '%s'",
         "botChatAuthAlreadyAuthorized_1": "You're already authorized.",
         "botChatAuthAlreadyAuthorized_2": "Type /start to begin.",
         "botChatAuthIsRevoked_1": "Your access has been revoked and cannot reauthorize.",
@@ -152,5 +153,6 @@
 	"adminOnly": "Only the admin can use this feature.",
 	"selectFromMenu": "\nPlease select from the menu below.",
         "selectSeriesType": "*Select which type of series*",
-        "askUsingSeasonFolders": "*Would you like to use season folders?*"
+        "askUsingSeasonFolders": "*Would you like to use season folders?*",
+        "searchForMovieNow": "*Would you like to search for the movie now?*"
 }

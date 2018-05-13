@@ -195,10 +195,10 @@ bot.on('message', function(msg) {
     return sonarr.sendFolderList(message);
   }
 
-  if (currentState === state.sonarr.SEASON_FOLDER) {
+  if (currentState === state.sonarr.SEARCH_NOW) {
     verifyUser(user.id);
-    logger.info(i18n.__('botChatQuerySeasonFolderChoose', user.id, message));
-    return sonarr.sendSeasonFolderList(message);
+    logger.info(i18n.__('botChatQuerySearchNow', user.id, message));
+    return sonarr.searchForMovie(message);
   }
 
   if (currentState === state.sonarr.ADD_SERIES) {
@@ -637,7 +637,7 @@ function clearCache(userId) {
     'seriesId', 'seriesList', 'seriesProfileId',
     'seriesProfileList', 'seriesFolderId', 'seriesFolderList',
     'seriesMonitorId', 'seriesMonitorList', 'seriesFolderId',
-    'seriesFolderList', 'seriesTypeId', 'seriesTypeList',
+    'seriesFolderList', 'seriesTypeId', 'seriesTypeList', 'seriesSearchForMovieList',
     'seriesSeasonFolderList',
     'revokedUserName', 'revokeUserList',
     'state'
