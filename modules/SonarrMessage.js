@@ -471,7 +471,7 @@ SonarrMessage.prototype.sendFolderList = function(profileName) {
     self.cache.set('seriesFolderList' + self.user.id, folderList);
 
     // if only 1 folder found skip folder selection
-    if(folders.length == 0) {
+    if(folders.length == 1) {
       logger.info('only one folder found, skipping selection');
       logger.info(folders[0].path);
       self.cache.set('seriesFolderId' + self.user.id, folders[0].path);
