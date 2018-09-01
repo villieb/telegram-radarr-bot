@@ -37,37 +37,27 @@ function RadarrMessage(bot, user, cache) {
  * perform commands
  */
 RadarrMessage.prototype.performLibrarySearch = function(searchText) {
-  var self = this;
+    var self = this;
+    var query = searchText;
 
-  var query = searchText;
-  console.log('debug1');
-  self.radarr.get('movie').then(function(result) {
-    console.log('debug2');
-    logger.info(i18n.__('logRadarrAllSeries',self.username));
+    // Grabs all movies and then performs regex on the results
+    self.radarr.get('movie').then(function(result) {
+      logger.info(i18n.__('logRadarrAllSeries',self.username));
+      _.sortBy(result, 'title');
 
-    _.sortBy(result, 'title');
-    console.log('debug3');
+      var response = [];
+      _.forEach(result, function(n, key) {
 
-    var response = [];
-    console.log('debug4');
-    _.forEach(result, function(n, key) {
-      console.log('debug5');
-      console.log(n);
-      console.log(key);
-      var series = '[' + n.title + '](https://www.imdb.com/title/' + n.imdbId + ')' + (n.year ? ' - _' + n.year + '_' : '');
-      if (query) {
-        console.log('debug6');
-        if (n.title.search( new RegExp(query, 'i') ) !== -1) {
-          console.log('debug7');
-          response.push(series);
+        var movie = '[' + n.title + '](https://www.imdb.com/title/' + n.imdbId + ')' + (n.year ? ' - _' + n.year + '_' : '');
+        // if a query was submitted, filter the results here
+        if (query) {
+          if (n.title.search( new RegExp(query, 'i') ) !== -1) {
+            response.push(movie);
+          }
+        } else {
+          response.push(movie);
         }
-      } else {
-        console.log('debug8');
-        response.push(series);
-      }
-      console.log('debug9');
-    });
-    console.log('debug10');
+      });
 
     if (!response.length) {
       throw new Error(i18n.__('errorRadarrUnableToLocate', query));
@@ -77,9 +67,10 @@ RadarrMessage.prototype.performLibrarySearch = function(searchText) {
 
     if (query) {
       // add title to begining of the array
-      response.unshift(i18n.__('botChatSonnarMatchingResults'));
+      response.unshift(i18n.__('botChatRadarrMatchingResults'));
     }
 
+    // If there are more than 50 results, split the messages
     if (response.length > 50) {
       var splitReponse = _.chunk(response, 50);
       splitReponse.sort();
