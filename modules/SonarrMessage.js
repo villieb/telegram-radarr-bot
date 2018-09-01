@@ -618,7 +618,7 @@ SonarrMessage.prototype.sendAddSeries = function(searchForMovie) {
  */
 SonarrMessage.prototype._sendMessage = function(message, keyboard) {
   var self = this;
-  keyboard = keyboard || null;
+  keyboard = keyboard || [];
 
   var options;
   if (message instanceof Error) {
