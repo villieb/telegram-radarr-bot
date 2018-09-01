@@ -135,7 +135,7 @@ RadarrMessage.prototype.performLibraryRefresh = function() {
     logger.info(i18n.__('logRadarrRefreshCommandSent', self.username));
 
     self.radarr.post('command', {
-            'name': 'RefreshSeries'
+            'name': 'RefreshMovie'
         })
         .then(function() {
             logger.info(i18n.__('logRadarrRefreshCommandExecuted', self.username));
