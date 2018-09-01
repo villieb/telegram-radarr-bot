@@ -125,7 +125,6 @@ RadarrMessage.prototype.performWantedSearch = function() {
             return self._sendMessage(i18n.__('botChatRadarrWantedCommandExecuted'));
         })
         .catch(function(error) {
-            logger.debug('catch movies return message')
             return self._sendMessage(error);
         });
 };
