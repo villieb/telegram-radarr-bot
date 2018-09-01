@@ -124,33 +124,17 @@ SonarrMessage.prototype.performWantedSearch = function() {
 
   logger.info(i18n.__('logSonarrWantedCommandSent', self.username));
 
-  self.sonarr.get('/wanted/missing', {
-    'page': 1,
-    'pageSize': 50,
-    'sortKey': 'airDateUtc',
-    'sortDir': 'desc'
+  self.sonarr.post('command', {
+      'name': 'missingMoviesSearch',
+      'filterKey': 'monitored',
+      'filterVaule': 'true'
   })
-  .then(function(wantedEpisodes) {
-    var episodeIds = [];
-    _.forEach(wantedEpisodes.records, function(n, key) {
-      episodeIds.push(n.id);
-    });
-    return episodeIds;
-  })
-  .then(function(episodes) {
-    self.sonarr.post('command', {
-      'name': 'EpisodeSearch',
-      'episodeIds': episodes
-    })
-    .then(function() {
-      logger.info(i18n.__('logSonarrWantedCommandExecuted', self.username));
-      return self._sendMessage(i18n.__('botChatSonarrWantedCommandExecuted'));
-    })
-    .catch(function(error) {
-      return self._sendMessage(error);
-    });
+  .then(function() {
+    logger.info(i18n.__('logSonarrWantedCommandExecuted', self.username));
+    return self._sendMessage(i18n.__('botChatSonarrWantedCommandExecuted'));
   })
   .catch(function(error) {
+    logger.debug('catch movies return message')
     return self._sendMessage(error);
   });
 };
@@ -455,7 +439,7 @@ SonarrMessage.prototype.sendFolderList = function(profileName) {
 
     logger.info(i18n.__('logSonarrFolderListRequested', self.username));
 
-    
+
     var folderList = [], keyboardList = [];
     var response = ['*Found ' + folders.length + ' folders*'];
     _.forEach(folders, function(n, key) {
@@ -539,7 +523,7 @@ SonarrMessage.prototype.searchForMovie = function(folderName) {
   self.cache.set('state' + self.user.id, state.sonarr.ADD_SERIES);
 
   return self._sendMessage(response.join('\n'), keyboardList);
-}; 
+};
 
 
 SonarrMessage.prototype.sendAddSeries = function(searchForMovie) {
