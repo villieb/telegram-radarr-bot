@@ -12,7 +12,7 @@
     "logRadarrFolderListRequested": "user: %s, message: requested to get folder list",
     "logRadarrFoundFolders": "user: %s, message: found the following folders %s",
     "logRadarrFoundSeasonsFolderTypes": "user: %s, message: found the following seasons folder types %s",
-    "logRadarrFoundSeries": "#1 user: %s, message: found the following series %s",
+    "logRadarrFoundMovies": "#1 user: %s, message: found the following movies %s",
     "logRadarrFoundSeries2": "#2 user: %s, message: found the following series %s",
     "logRadarrFoundProfile": "#3 user: %s, message: found the following profiles %s",
     "logRadarrFoundMonitorType": "user: %s, message: found the following monitor types %s",

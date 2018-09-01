@@ -147,48 +147,34 @@ RadarrMessage.prototype.performLibraryRefresh = function() {
 };
 
 RadarrMessage.prototype.performCalendarSearch = function(futureDays) {
-    logger.info('Debug1');
     var self = this;
-    logger.info('Debug2');
 
     var fromDate = moment().toISOString();
     var toDate = moment().add(futureDays, 'day').toISOString();
 
-    logger.info('Debug3');
     logger.info(i18n.__('logRadarrUpcomingCommandSent', self.username, fromDate, toDate));
-    logger.info('Debug4');
 
     self.radarr.get('calendar', { 'start': fromDate, 'end': toDate })
         .then(function(episode) {
             if(!episode.length) {
                 throw new Error(i18n.__('errorRadarrNothingInCalendar'));
             }
-            logger.info('Debug5');
 
             var lastDate = null;
             var response = [];
             _.forEach(episode, function(n, key) {
-                logger.info('Debug6');
                 var done = (n.hasFile ? i18n.__('RadarrDone') : '');
                 var niceDate = moment(n.physicalRelease).format("MMM Do YYYY");
                 logger.info(niceDate);
-                logger.info('Debug61');
 
                 // Add an empty line to break list of multiple days
                 // if(lastDate != null && n.airDate != lastDate) response.push(' ');
-                logger.info('Debug62');
-                logger.info(n);
-
                 response.push(niceDate + ' - ' + n.title + done);
-                logger.info('Debug63');
                 lastDate = n.airDate;
-                logger.info('Debug64');
             });
-            logger.info('Debug7');
 
-            logger.info(i18n.__("logRadarrFoundSeries", self.username, response.join(',')));
+            logger.info(i18n.__("logRadarrFoundMovies", self.username, response.join(',')));
 
-            logger.info('Debug8');
             return self._sendMessage(response.join('\n'), []);
         })
         .catch(function(error) {
