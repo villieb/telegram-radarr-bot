@@ -87,7 +87,7 @@
     "botChatHelp_5": "`/query [movie]` add new movie",
     "botChatHelp_6": "/library List all library *Warning - can be large*",
     "botChatHelp_7": "/library [movie] search Radarr library",
-    "botChatHelp_8": "/upcoming shows upcoming movies",
+    "botChatHelp_8": "/upcoming [days] shows upcoming movies",
     "botChatHelp_9": "/clear clear all previous commands",
     "botChatHelp_10": "\n*Admin commands:*",
     "botChatHelp_11": "/wanted search all missing/wanted movies",
