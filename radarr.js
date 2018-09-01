@@ -678,15 +678,16 @@ function sendCommands(fromId) {
   response.push(i18n.__('botChatHelp_6'));
   response.push(i18n.__('botChatHelp_7'));
   response.push(i18n.__('botChatHelp_8'));
+  response.push(i18n.__('botChatHelp_9'));
 
   if (isAdmin(fromId)) {
-    response.push(i18n.__('botChatHelp_9'));
     response.push(i18n.__('botChatHelp_10'));
     response.push(i18n.__('botChatHelp_11'));
     response.push(i18n.__('botChatHelp_12'));
     response.push(i18n.__('botChatHelp_13'));
     response.push(i18n.__('botChatHelp_14'));
     response.push(i18n.__('botChatHelp_15'));
+    response.push(i18n.__('botChatHelp_16'));
   }
 
   //return bot.sendMessage(fromId, response.join('\n'), { 'parse_mode': 'Markdown', 'selective': 2 });
