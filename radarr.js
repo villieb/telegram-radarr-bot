@@ -19,7 +19,7 @@ var acl    = require(__dirname + '/lib/acl');           // set up the acl file
 /*
  * modules
  */
-var SonarrMessage = require(__dirname + '/modules/SonarrMessage');
+var RadarrMessage = require(__dirname + '/modules/RadarrMessage');
 
 /*
  * modules
@@ -63,7 +63,7 @@ bot.onText(/\/start/, function(msg) {
  */
 bot.onText(/\/help/, function(msg) {
   var fromId = msg.from.id;
-  
+
   verifyUser(fromId);
 
   logger.info(i18n.__('logUserHelpCommand', fromId));
@@ -71,18 +71,18 @@ bot.onText(/\/help/, function(msg) {
 });
 
 /*
- * handle sonarr commands
+ * handle radarr commands
  */
 bot.on('message', function(msg) {
   var user    = msg.from;
   var message = msg.text;
- 
-  var sonarr = new SonarrMessage(bot, user, cache);
+
+  var radarr = new RadarrMessage(bot, user, cache);
 
   if (/^\/library\s?(.+)?$/g.test(message)) {
     if(isAuthorized(user.id)){
        var searchText = /^\/library\s?(.+)?/g.exec(message)[1] || null;
-       return sonarr.performLibrarySearch(searchText);
+       return radarr.performLibrarySearch(searchText);
     } else {
        return replyWithError(user.id, new Error(i18n.__('notAuthorized')));
     }
@@ -91,28 +91,28 @@ bot.on('message', function(msg) {
   if(/^\/rss$/g.test(message)) {
     verifyAdmin(user.id);
     if(isAdmin(user.id)){
-      return sonarr.performRssSync();
-    }  
+      return radarr.performRssSync();
+    }
   }
 
   if(/^\/wanted$/g.test(message)) {
     verifyAdmin(user.id);
     if(isAdmin(user.id)){
-      return sonarr.performWantedSearch();
+      return radarr.performWantedSearch();
     }
   }
 
   if(/^\/refresh$/g.test(message)) {
     verifyAdmin(user.id);
     if(isAdmin(user.id)){
-      return sonarr.performLibraryRefresh();
+      return radarr.performLibraryRefresh();
     }
   }
 
   if (/^\/upcoming\s?(\d+)?$/g.test(message)) {
     if(isAuthorized(user.id)){
       var futureDays = /^\/upcoming\s?(\d+)?/g.exec(message)[1] || 30;
-      return sonarr.performCalendarSearch(futureDays);
+      return radarr.performCalendarSearch(futureDays);
     } else {
        return replyWithError(user.id, new Error(i18n.__('notAuthorized')));
     }
@@ -136,9 +136,9 @@ bot.on('message', function(msg) {
   if (/^\/[Qq](uery)? (.+)$/g.test(message)) {
     if(isAuthorized(user.id)){
        var seriesName = /^\/[Qq](uery)? (.+)/g.exec(message)[2] || null;
-       return sonarr.sendSeriesList(seriesName);
+       return radarr.sendSeriesList(seriesName);
     } else {
-       return replyWithError(user.id, new Error(i18n.__('notAuthorized')));     
+       return replyWithError(user.id, new Error(i18n.__('notAuthorized')));
     }
   }
 
@@ -165,45 +165,45 @@ bot.on('message', function(msg) {
     return handleUnRevokeUserConfirm(user.id, message);
   }
 
-  if (currentState === state.sonarr.CONFIRM) {
+  if (currentState === state.radarr.CONFIRM) {
     verifyUser(user.id);
     logger.info(i18n.__('botChatQuerySeriesConfirm', user.id, message));
-    return sonarr.confirmShowSelect(message);
+    return radarr.confirmShowSelect(message);
   }
 
-  if (currentState === state.sonarr.PROFILE) {
+  if (currentState === state.radarr.PROFILE) {
     verifyUser(user.id);
     logger.info(i18n.__('botChatQuerySeriesChoose', user.id, message));
-    return sonarr.sendProfileList(message);
+    return radarr.sendProfileList(message);
   }
 
-  if (currentState === state.sonarr.MONITOR) {
+  if (currentState === state.radarr.MONITOR) {
     verifyUser(user.id);
     logger.info(i18n.__('botChatQueryProfileChoose', user.id, message));
-    return sonarr.sendMonitorList(message);
+    return radarr.sendMonitorList(message);
   }
 
-  if (currentState === state.sonarr.TYPE) {
+  if (currentState === state.radarr.TYPE) {
     verifyUser(user.id);
     logger.info(i18n.__('botChatQueryTypeChoose', user.id, message));
-    return sonarr.sendTypeList(message);
+    return radarr.sendTypeList(message);
   }
 
-  if (currentState === state.sonarr.FOLDER) {
+  if (currentState === state.radarr.FOLDER) {
     verifyUser(user.id);
     logger.info(i18n.__('botChatQueryFolderChoose', user.id, message));
-    return sonarr.sendFolderList(message);
+    return radarr.sendFolderList(message);
   }
 
-  if (currentState === state.sonarr.SEARCH_NOW) {
+  if (currentState === state.radarr.SEARCH_NOW) {
     verifyUser(user.id);
     logger.info(i18n.__('botChatQuerySearchNow', user.id, message));
-    return sonarr.searchForMovie(message);
+    return radarr.searchForMovie(message);
   }
 
-  if (currentState === state.sonarr.ADD_SERIES) {
+  if (currentState === state.radarr.ADD_SERIES) {
     verifyUser(user.id);
-    return sonarr.sendAddSeries(message);
+    return radarr.sendAddSeries(message);
   }
 
 });
@@ -256,7 +256,7 @@ bot.onText(/\/auth (.+)/, function(msg, match) {
  */
 bot.onText(/\/users/, function(msg) {
   var fromId = msg.from.id;
-  
+
   verifyAdmin(fromId);
   if(isAdmin(fromId)){
 
@@ -271,7 +271,7 @@ bot.onText(/\/users/, function(msg) {
     //  'parse_mode': 'Markdown',
     //  'selective': 2,
     //});
-  } 
+  }
 
 });
 
@@ -324,9 +324,9 @@ bot.onText(/\/revoke/, function(msg) {
     // set cache
     cache.set('state' + fromId, state.admin.REVOKE);
     cache.set('revokeUserList' + fromId, revokeList);
-    
+
     var message = response.join('\n');
-    
+
     return bot.sendMessage(fromId, message, {
       'disable_web_page_preview': true,
       'parse_mode': 'Markdown',
@@ -398,7 +398,7 @@ bot.onText(/\/unrevoke/, function(msg) {
  */
 bot.onText(/\/clear/, function(msg) {
   var fromId = msg.from.id;
-  
+
   if(isAuthorized(fromId)){
     logger.info('user: %s, message: sent \'/clear\' command', fromId);
     clearCache(fromId);
@@ -489,7 +489,7 @@ function handleUnRevokeUser(userId, revokedUser) {
   var response = [i18n.__('botChatUnrevokeConfirmation', revokedUser)];
   keyboardList.push([i18n.__('globalNo')]);
   keyboardList.push([i18n.__('globalYes')]);
-  
+
   // set cache
   cache.set('state' + userId, state.admin.UNREVOKE_CONFIRM);
   cache.set('revokedUserName' + userId, revokedUser);
