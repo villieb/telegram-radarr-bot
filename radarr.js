@@ -135,8 +135,8 @@ bot.on('message', function(msg) {
      */
     if(/^\/[Qq](uery)? (.+)$/g.test(message)) {
         if(isAuthorized(user.id)) {
-            var seriesName = /^\/[Qq](uery)? (.+)/g.exec(message)[2] || null;
-            return radarr.sendSeriesList(seriesName);
+            var movieName = /^\/[Qq](uery)? (.+)/g.exec(message)[2] || null;
+            return radarr.sendSeriesList(movieName);
         } else {
             return replyWithError(user.id, new Error(i18n.__('notAuthorized')));
         }
@@ -167,8 +167,8 @@ bot.on('message', function(msg) {
 
     if(currentState === state.radarr.CONFIRM) {
         verifyUser(user.id);
-        logger.info(i18n.__('botChatQuerySeriesConfirm', user.id, message));
-        return radarr.confirmShowSelect(message);
+        logger.info(i18n.__('botChatQueryMovieConfirm', user.id, message));
+        return radarr.confirmMovieSelect(message);
     }
 
     if(currentState === state.radarr.PROFILE) {
@@ -201,9 +201,9 @@ bot.on('message', function(msg) {
         return radarr.searchForMovie(message);
     }
 
-    if(currentState === state.radarr.ADD_SERIES) {
+    if(currentState === state.radarr.ADD_MOVIE) {
         verifyUser(user.id);
-        return radarr.sendAddSeries(message);
+        return radarr.sendAddMovie(message);
     }
 
 });
@@ -638,11 +638,9 @@ function replyWithError(userId, err) {
  */
 function clearCache(userId) {
     var cacheItems = [
-        'seriesId', 'seriesList', 'seriesProfileId',
-        'seriesProfileList', 'seriesFolderId', 'seriesFolderList',
-        'seriesMonitorId', 'seriesMonitorList', 'seriesFolderId',
-        'seriesFolderList', 'seriesTypeId', 'seriesTypeList', 'seriesSearchForMovieList',
-        'seriesSeasonFolderList',
+        'movieId', 'movieList', 'moviesProfileId',
+        'moviesProfileList', 'moviesFolderId',
+        'searchForMovieList', 'moviesFolderList',
         'revokedUserName', 'revokeUserList',
         'state'
     ];
