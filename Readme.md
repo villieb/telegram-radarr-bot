@@ -17,7 +17,7 @@ Getting Started
 
 ```bash
 # Clone the repository
-git clone https://github.com/imran0/telegram-radarr-bot
+git clone https://github.com/itsmegb/telegram-radarr-bot
 ```
 
 ```bash
@@ -163,22 +163,21 @@ Sonarr can be setup to send notifications to a user or a group chat when new con
 Alternatively you may use Docker to start the bot
 ```
 docker run --name telegram-sonarr-bot \
-  -e TELEGRAM_BOTTOKEN=
-  -e BOT_PASSWORD=
-  -e BOT_OWNER=
-  -e BOT_NOTIFYID=
-  -e BOT_MAXRESULTS=
-  -e SONARR_HOST=
-  -e SONARR_APIKEY=
-  -e SONARR_PORT=
-  -e SONARR_URLBASE=
-  -e SONARR_SSL=
-  -e SONARR_USERNAME=
-  -e SONARR_PASSWORD=
+  -e TELEGRAM_BOTTOKEN=<TELEGRAM_BOTTOKEN> \
+  -e BOT_PASSWORD=<BOT_PASSWORD> \
+  -e BOT_OWNER=<BOT_OWNER> \
+  -e BOT_NOTIFYID=<BOT_NOTIFYID> \
+  -e BOT_MAXRESULTS=<BOT_MAXRESULTS> \
+  -e RADARR_HOST=<RADARR_HOST> \
+  -e RADARR_APIKEY=<RADARR_APIKEY> \
+  -e RADARR_PORT=<RADARR_PORT> \
+  -e RADARR_URLBASE=<RADARR_URLBASE> \
+  -e RADARR_SSL=<RADARR_SSL> \
+  -e RADARR_USERNAME=<RADARR_USERNAME> \
+  -e RADARR_PASSWORD=<RADARR_PASSWORD> \
+  -v /path/to/config:/app/config \
   telegram-sonarr-bot
 ```
-
-**Prebuilt** Docker image for this bot can be found [here](https://hub.docker.com/r/subzero79/docker-telegram-sonarr-bot), thanks [@subzero79](https://github.com/subzero79)
 
 ## License
 (The MIT License)
