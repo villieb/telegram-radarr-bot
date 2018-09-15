@@ -183,12 +183,6 @@ bot.on('message', function(msg) {
         return radarr.sendMonitorList(message);
     }
 
-    if(currentState === state.radarr.TYPE) {
-        verifyUser(user.id);
-        logger.info(i18n.__('botChatQueryTypeChoose', user.id, message));
-        return radarr.sendTypeList(message);
-    }
-
     if(currentState === state.radarr.FOLDER) {
         verifyUser(user.id);
         logger.info(i18n.__('botChatQueryFolderChoose', user.id, message));
