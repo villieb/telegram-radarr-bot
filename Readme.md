@@ -47,10 +47,10 @@ Bot:
 - **notifyId** Telegram ID used for notifications. (optional; you can fill this in later)
 
 Radarr:
-- **hostname**: hostname where Sonarr runs (required)
-- **apiKey**: Your API to access Sonarr (required)
-- **port**: port number Sonarr is listening on (optional, default: 5050)
-- **urlBase**: URL Base of Sonarr (optional, default: empty)
+- **hostname**: hostname where Radarr runs (required)
+- **apiKey**: Your API to access Radarr (required)
+- **port**: port number Radarr is listening on (optional, default: 5050)
+- **urlBase**: URL Base of Radarr (optional, default: empty)
 - **ssl**: Set to true if you are connecting via SSL (default: false)
 - **username**: HTTP Auth username (default: empty)
 - **password**: HTTP Auth password (default: empty)
@@ -130,13 +130,13 @@ Send the monitor type using the custom keyboard
 If everything goes well, you'll see a text from the bot saying the series was added.
 
 ### Notifications
-Sonarr can be setup to send notifications to a user or a group chat when new content is added.  
+Radarr can be setup to send notifications to a user or a group chat when new content is added.  
 
-* In Sonarr go to `Settings` > `Connect` > `+` > `Custom Script`
+* In Radarr go to `Settings` > `Connect` > `+` > `Custom Script`
 * In the Name field enter `Telegram`
 * In the Path field enter the full path to your node.js installation i.e. `C:\Program Files\nodejs\node.exe`
 * In the Arguments field enter the full path to `sonarr_notify.js` i.e `C:\bots\telegram-sonarr-bot\sonarr_notify.js`
-* Start the bot by running `node sonarr.js`
+* Start the bot by running `node radarr.js`
 * Open a new chat or group chat with the bot and type `/cid`
 * Note the Chat ID
 * Open `config.json` and enter the Chat ID next to `notifyId`
@@ -145,15 +145,16 @@ Sonarr can be setup to send notifications to a user or a group chat when new con
 
 
 ### Additional commands
-* `/upcoming` shows upcoming episodes, has a day parameter, defaults to 3 days
-* `/library` search Sonarr library for existing shows
+* `/upcoming` shows upcoming movies, has a day parameter, defaults to 30 days
+* `/library <movie>` search Radarr library for existing movies
+* `/library` shows a list of all movies in the library *warning can be lots of output*
 * `/help` show available commands
 * `/clear` clear all previous commands and cache
 
 ### Admin commands
-* `/wanted` search all missing/wanted episodes
+* `/wanted` search all missing/wanted movies
 * `/rss` perform an RSS Sync
-* `/refresh` refreshes all series
+* `/refresh` refreshes all movies
 * `/users` list users
 * `/revoke` revoke user from bot
 * `/unrevoke` un-revoke user from bot
@@ -162,7 +163,7 @@ Sonarr can be setup to send notifications to a user or a group chat when new con
 ## Docker
 Alternatively you may use Docker to start the bot
 ```
-docker run --name telegram-sonarr-bot \
+docker run --name telegram-radarr-bot \
   -e TELEGRAM_BOTTOKEN=<TELEGRAM_BOTTOKEN> \
   -e BOT_PASSWORD=<BOT_PASSWORD> \
   -e BOT_OWNER=<BOT_OWNER> \
