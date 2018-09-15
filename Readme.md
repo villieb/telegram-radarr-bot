@@ -175,8 +175,8 @@ docker run --name telegram-sonarr-bot \
   -e RADARR_SSL=<RADARR_SSL> \
   -e RADARR_USERNAME=<RADARR_USERNAME> \
   -e RADARR_PASSWORD=<RADARR_PASSWORD> \
-  -v /path/to/config:/app/config \
-  telegram-sonarr-bot
+  -v /path/to/config:/config \
+  telegram-radarr-bot
 ```
 
 ## License
