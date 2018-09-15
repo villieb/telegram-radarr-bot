@@ -49,7 +49,7 @@ Bot:
 Radarr:
 - **hostname**: hostname where Radarr runs (required)
 - **apiKey**: Your API to access Radarr (required)
-- **port**: port number Radarr is listening on (optional, default: 5050)
+- **port**: port number Radarr is listening on (optional, default: 7878)
 - **urlBase**: URL Base of Radarr (optional, default: empty)
 - **ssl**: Set to true if you are connecting via SSL (default: false)
 - **username**: HTTP Auth username (default: empty)
