@@ -1,4 +1,4 @@
-FROM node:5.2
+FROM node:alpine
 
 RUN mkdir /app
 
@@ -7,5 +7,5 @@ COPY package.json ./
 RUN npm install
 
 COPY . ./
-
-CMD ["node", "sonarr.js"]
+VOLUME /app/config
+CMD ["node", "radarr.js"]

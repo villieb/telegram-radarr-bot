@@ -28,12 +28,12 @@ npm install
 
 ```bash
 # Copy acl.json.template to acl.json
-cp acl.json.template acl.json
+cp config/acl.json.template config/acl.json
 ```
 
 ```bash
 # Copy config.json.template to config.json
-cp config.json.template config.json
+cp config/config.json.template config/config.json
 ```
 
 In `config.json` fill in the values below:
@@ -137,7 +137,7 @@ Sonarr can be setup to send notifications to a user or a group chat when new con
 * In the Path field enter the full path to your node.js installation i.e. `C:\Program Files\nodejs\node.exe`
 * In the Arguments field enter the full path to `sonarr_notify.js` i.e `C:\bots\telegram-sonarr-bot\sonarr_notify.js`
 * Start the bot by running `node sonarr.js`
-* Open a new chat or group chat with the bot and type `/cid` 
+* Open a new chat or group chat with the bot and type `/cid`
 * Note the Chat ID
 * Open `config.json` and enter the Chat ID next to `notifyId`
 * Restart the bot
