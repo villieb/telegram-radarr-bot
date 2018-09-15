@@ -539,10 +539,10 @@ RadarrMessage.prototype.sendAddMovie = function(searchForMovie) {
                 throw new Error(i18n.__("logRadarrMovieCantAdd"));
             }
 
-            logger.info(i18n.__("logRadarrMovieAdded", self.username, series.title));
+            logger.info(i18n.__("logRadarrMovieAdded", self.username, movie.title));
 
             if(self._isBotAdmin() && self.adminId !== self.user.id) {
-                self.bot.sendMessage(self.user.id, i18n.__("botChatRadarrMovieAddedBy", series.title, self.username), {
+                self.bot.sendMessage(self.user.id, i18n.__("botChatRadarrMovieAddedBy", movie.title, self.username), {
                     'selective': 2,
                     'parse_mode': 'Markdown',
                     'reply_markup': {
@@ -551,7 +551,7 @@ RadarrMessage.prototype.sendAddMovie = function(searchForMovie) {
                 });
             }
 
-            return self.bot.sendMessage(self.user.id, i18n.__("botChatRadarrMovieAdded", series.title), {
+            return self.bot.sendMessage(self.user.id, i18n.__("botChatRadarrMovieAdded", movie.title), {
                 'selective': 2,
                 'parse_mode': 'Markdown',
                 'reply_markup': {
