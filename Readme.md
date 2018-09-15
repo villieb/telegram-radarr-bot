@@ -179,6 +179,8 @@ docker run --name telegram-sonarr-bot \
   telegram-radarr-bot
 ```
 
+There is a pre-built Docker image here: https://hub.docker.com/r/itsmegb/telegram-radarr-bot/
+
 ## License
 (The MIT License)
 
