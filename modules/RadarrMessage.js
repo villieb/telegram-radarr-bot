@@ -523,6 +523,7 @@ RadarrMessage.prototype.sendAddMovie = function(searchForMovie) {
     postOpts.title = movie.title;
     postOpts.titleSlug = movie.titleSlug;
     postOpts.rootFolderPath = folder.path;
+    postOpts.year = movie.year;
     postOpts.monitored = true;
     postOpts.qualityProfileId = profile.profileId;
     postOpts.images = [];
