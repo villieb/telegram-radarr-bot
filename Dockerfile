@@ -1,20 +1,18 @@
 FROM node:alpine
 MAINTAINER itsmegb
 
-RUN apk add --update unzip wget
+RUN apk add --update git
 
 RUN mkdir /app && \
-    wget --no-check-certificate https://github.com/itsmegb/telegram-radarr-bot/archive/master.zip -P /app && \
-    unzip /app/master.zip -d /app && \
-    rm /app/master.zip
+    git clone https://github.com/itsmegb/telegram-radarr-bot.git /app
 
-WORKDIR /app/telegram-radarr-bot-master
+WORKDIR /app
 
 RUN npm install
 
-RUN ln -s /app/telegram-radarr-bot-master/config /config
+RUN ln -s /app/config /config
 
-RUN apk del unzip wget
+RUN apk del git
 
 VOLUME /config
 
