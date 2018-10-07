@@ -1,0 +1,21 @@
+FROM node:alpine
+MAINTAINER itsmegb
+
+RUN apk add --update unzip wget
+
+RUN mkdir /app && \
+    wget --no-check-certificate https://gitlab.star-bug.co.uk/gboddey/telegram-radarr-bot/-/archive/develop/telegram-radarr-bot-develop.zip -P /app && \
+    unzip /app/telegram-radarr-bot-develop.zip -d /app && \
+    rm /app/telegram-radarr-bot-develop.zip
+
+WORKDIR /app/telegram-radarr-bot-develop
+
+RUN npm install
+
+RUN ln -s /app/telegram-radarr-bot-master/config /config
+
+RUN apk del unzip wget
+
+VOLUME /config
+
+CMD ["node", "radarr.js"]
