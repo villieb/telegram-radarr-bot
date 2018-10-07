@@ -5,6 +5,13 @@ image: docker:latest
 services:
   - docker:dind
 
+stages:
+  - build
+  - deploy
+
+variables:
+  DEVEL_CONTAINER_NAME: radarr-bot
+
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
@@ -23,3 +30,12 @@ build:
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   except:
     - master
+
+deploy-develop:
+  stage: deploy
+  script:
+    - docker stop $DEVEL_CONTAINER_NAME
+    - docker rm $DEVEL_CONTAINER_NAME
+    - docker run -d --name $DEVEL_CONTAINER_NAME --restart=always -v "$CONFIG_LOCATION:/config" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  only:
+    - develop
