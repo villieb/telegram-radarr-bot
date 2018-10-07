@@ -58,6 +58,8 @@
 	"botChatAuthUserWasGranted": "%s has been granted access.",
 	"botChatAuthGranted_1": "You have been authorized.",
 	"botChatAuthGranted_2": "Type /start to begin.",
+	"botChatAlreadyCleared": "There are no commands to clear",
+	"botChatCommandsCleared": "All previously sent commands have been cleared",
 	"botChatUsers": "*Allowed Users:*",
 	"botChatRevoke": "*Allowed Users:*",
 	"botChatRevokeNoUsers": "There aren't any allowed users.",

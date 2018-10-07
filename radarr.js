@@ -71,34 +71,31 @@ bot.onText(/\/help/, function(msg) {
 });
 
 /*
- * handle clear command
- */
-bot.onText(/\/clear/, function(msg) {
-    var fromId = msg.from.id;
-
-    if(isAuthorized(fromId)) {
-        logger.info('user: %s, message: sent \'/clear\' command', fromId);
-        clearCache(fromId);
-        logger.info('user: %s, message: \'/clear\' command successfully executed', fromId);
-
-        return bot.sendMessage(fromId, 'All previously sent commands have been cleared, yey!', {
-            'reply_markup': {
-                'hide_keyboard': true
-            }
-        });
-    } else {
-        return replyWithError(fromId, new Error(i18n.__('notAuthorized')))
-    }
-});
-
-/*
  * handle radarr commands
  */
 bot.on('message', function(msg) {
     var user = msg.from;
     var message = msg.text;
 
+    logger.info('user: %s, message: %s', user.username, message);
+
     var radarr = new RadarrMessage(bot, user, cache);
+
+    if(/^\/clear$/g.test(message)) {
+
+        if(isAuthorized(user.id)) {
+
+            clearCache(user.id);
+
+            return bot.sendMessage(user.id, i18n.__('botChatCommandsCleared'), {
+                'reply_markup': {
+                    'hide_keyboard': true
+                }
+            });
+        } else {
+            return replyWithError(user.id, new Error(i18n.__('notAuthorized')));
+        }
+    }
 
     if(/^\/library\s?(.+)?$/g.test(message)) {
         if(isAuthorized(user.id)) {
