@@ -136,7 +136,7 @@ bot.on('message', function(msg) {
     if(/^\/[Qq](uery)? (.+)$/g.test(message)) {
         if(isAuthorized(user.id)) {
             var movieName = /^\/[Qq](uery)? (.+)/g.exec(message)[2] || null;
-            return radarr.sendSeriesList(movieName);
+            return radarr.sendMovieList(movieName);
         } else {
             return replyWithError(user.id, new Error(i18n.__('notAuthorized')));
         }

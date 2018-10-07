@@ -34,7 +34,8 @@ function RadarrMessage(bot, user, cache) {
 }
 
 /*
- * perform commands
+ * Perform a Radarr Library Search
+ * @param {string} searchTest - The string to search with, null for all.
  */
 RadarrMessage.prototype.performLibrarySearch = function(searchText) {
     var self = this;
@@ -42,7 +43,7 @@ RadarrMessage.prototype.performLibrarySearch = function(searchText) {
 
     // Grabs all movies and then performs regex on the results
     self.radarr.get('movie').then(function(result) {
-        logger.info(i18n.__('logRadarrAllSeries', self.username));
+        logger.info(i18n.__('logRadarrAllMovies', self.username));
         _.sortBy(result, 'title');
 
         var response = [];
@@ -95,6 +96,9 @@ RadarrMessage.prototype.performLibrarySearch = function(searchText) {
 
 };
 
+/*
+ * Perform a Radarr RSS Sync
+ */
 RadarrMessage.prototype.performRssSync = function() {
     var self = this;
 
@@ -110,6 +114,9 @@ RadarrMessage.prototype.performRssSync = function() {
         });
 };
 
+/*
+ * Perform a search for all wanted items/
+ */
 RadarrMessage.prototype.performWantedSearch = function() {
     var self = this;
 
@@ -129,6 +136,9 @@ RadarrMessage.prototype.performWantedSearch = function() {
         });
 };
 
+/*
+ * Perform a refresh scan of the Radarr library
+ */
 RadarrMessage.prototype.performLibraryRefresh = function() {
     var self = this;
 
@@ -146,6 +156,10 @@ RadarrMessage.prototype.performLibraryRefresh = function() {
         });
 };
 
+/*
+ * Search for upcoming releases
+ * @param {integer} futureDays - The number of days in the future do search.
+ */
 RadarrMessage.prototype.performCalendarSearch = function(futureDays) {
     var self = this;
 
@@ -184,12 +198,11 @@ RadarrMessage.prototype.performCalendarSearch = function(futureDays) {
 
 
 /*
- * handle the flow of adding a new series
+ * Perform a Radarr search for a new movie
+ * @param {string} movieName - The name of the movie to search for.
  */
-RadarrMessage.prototype.sendSeriesList = function(movieName) {
+RadarrMessage.prototype.sendMovieList = function(movieName) {
     var self = this;
-
-    self.test = 'hello';
 
     logger.info(i18n.__('logRadarrQueryCommandSent', self.username));
 
@@ -254,7 +267,11 @@ RadarrMessage.prototype.sendSeriesList = function(movieName) {
         });
 };
 
-RadarrMessage.prototype.confirmMovieSelect = function(displayName) {
+/*
+ * Confirm the movie to add to Radarr
+ * @param {string} movieName - The name of the movie to add.
+ */
+RadarrMessage.prototype.confirmMovieSelect = function(movieName) {
     var self = this;
 
     var movieList = self.cache.get('movieList' + self.user.id);
@@ -263,9 +280,9 @@ RadarrMessage.prototype.confirmMovieSelect = function(displayName) {
         return self._sendMessage(new Error(i18n.__('errorRadarrWentWrong')));
     }
 
-    var movie = _.filter(movieList, function(item) { return item.keyboardValue === displayName; })[0];
+    var movie = _.filter(movieList, function(item) { return item.keyboardValue === movieName; })[0];
     if(!movie) {
-        return self._sendMessage(new Error(i18n.__('botChatRadarrMovieNotFound', displayName)));
+        return self._sendMessage(new Error(i18n.__('botChatRadarrMovieNotFound', movieName)));
     }
 
     // use workflow to run async tasks
@@ -323,6 +340,10 @@ RadarrMessage.prototype.confirmMovieSelect = function(displayName) {
     workflow.emit('checkRadarrMovie');
 };
 
+/*
+ * Return the Radarr Profiles to choose from
+ * @param {string} displayName - Name of the movie being added.
+ */
 RadarrMessage.prototype.sendProfileList = function(displayName) {
     var self = this;
 
@@ -393,6 +414,10 @@ RadarrMessage.prototype.sendProfileList = function(displayName) {
     workflow.emit('getRadarrProfiles');
 };
 
+/*
+ * Return the list of available folders to store the movie in.
+ * @param {string} profileName - The name of the profile to be used for the download.
+ */
 RadarrMessage.prototype.sendFolderList = function(profileName) {
     var self = this;
 
@@ -451,6 +476,10 @@ RadarrMessage.prototype.sendFolderList = function(profileName) {
         });
 };
 
+/*
+ * Ask whether to add and perform search for the new movie.
+ * @param {string} folderName - The Name of the folder to use for the downloaded movie.
+ */
 RadarrMessage.prototype.searchForMovie = function(folderName) {
     var self = this;
 
@@ -493,7 +522,10 @@ RadarrMessage.prototype.searchForMovie = function(folderName) {
     return self._sendMessage(response.join('\n'), keyboardList);
 };
 
-
+/*
+ * Send the add movie request to Radarr.
+ * @param {string} searchForMovie - Whether to search for the movie once added.
+ */
 RadarrMessage.prototype.sendAddMovie = function(searchForMovie) {
     var self = this;
 
@@ -572,6 +604,12 @@ RadarrMessage.prototype.sendAddMovie = function(searchForMovie) {
 /*
  * private methods
  */
+
+/*
+ * Send a message to the user
+ * @param {string} message - Message to send
+ * @param {string[]} keyboard - Keyboard buttons to be displayed.
+ */
 RadarrMessage.prototype._sendMessage = function(message, keyboard) {
     var self = this;
     keyboard = keyboard || [];
@@ -599,6 +637,9 @@ RadarrMessage.prototype._sendMessage = function(message, keyboard) {
     return self.bot.sendMessage(self.user.id, message, options);
 };
 
+/*
+ * Check to see if the user is also the admin
+ */
 RadarrMessage.prototype._isBotAdmin = function() {
     if(this.adminId === this.user.id) {
         return true;
@@ -606,6 +647,9 @@ RadarrMessage.prototype._isBotAdmin = function() {
     return false;
 };
 
+/*
+ * Clear the internal cache
+ */
 RadarrMessage.prototype._clearCache = function() {
     var self = this;
 
