@@ -71,6 +71,27 @@ bot.onText(/\/help/, function(msg) {
 });
 
 /*
+ * handle clear command
+ */
+bot.onText(/\/clear/, function(msg) {
+    var fromId = msg.from.id;
+
+    if(isAuthorized(fromId)) {
+        logger.info('user: %s, message: sent \'/clear\' command', fromId);
+        clearCache(fromId);
+        logger.info('user: %s, message: \'/clear\' command successfully executed', fromId);
+
+        return bot.sendMessage(fromId, 'All previously sent commands have been cleared, yey!', {
+            'reply_markup': {
+                'hide_keyboard': true
+            }
+        });
+    } else {
+        return replyWithError(fromId, new Error(i18n.__('notAuthorized')))
+    }
+});
+
+/*
  * handle radarr commands
  */
 bot.on('message', function(msg) {
@@ -388,27 +409,6 @@ bot.onText(/\/unrevoke/, function(msg) {
             'selective': 2,
             'reply_markup': JSON.stringify({ keyboard: keyboardList, one_time_keyboard: true })
         });
-    }
-});
-
-/*
- * handle clear command
- */
-bot.onText(/\/clear/, function(msg) {
-    var fromId = msg.from.id;
-
-    if(isAuthorized(fromId)) {
-        logger.info('user: %s, message: sent \'/clear\' command', fromId);
-        clearCache(fromId);
-        logger.info('user: %s, message: \'/clear\' command successfully executed', fromId);
-
-        return bot.sendMessage(fromId, 'All previously sent commands have been cleared, yey!', {
-            'reply_markup': {
-                'hide_keyboard': true
-            }
-        });
-    } else {
-        return replyWithError(fromId, new Error(i18n.__('notAuthorized')))
     }
 });
 

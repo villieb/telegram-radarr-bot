@@ -32,7 +32,6 @@ deploy-develop:
   stage: deploy
   script:
     - docker stop $DEVEL_CONTAINER_NAME || true && docker rm $DEVEL_CONTAINER_NAME || true
-    - docker rm $DEVEL_CONTAINER_NAME
     - docker run -d --name $DEVEL_CONTAINER_NAME --restart=always -v "$CONFIG_LOCATION:/config" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   only:
     - develop
