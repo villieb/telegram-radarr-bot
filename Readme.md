@@ -1,5 +1,3 @@
-**This is a port of the Sonarr telegram bot, it is still a work in progress and many functions do not work. Do not use this on a machine that has nuclear launch codes. Even this readme is a work in progress!**
-
 # telegram-radarr-bot
 
 Bot which lets you or others add series to [Radarr](https://radarr.video/) via the messaging service [Telegram](https://telegram.org/).
@@ -10,7 +8,7 @@ Getting Started
 ---------------
 
 ## Prerequisites
-- [Node.js](http://nodejs.org) v4.2.x
+- [Node.js](http://nodejs.org)
 - [Git](https://git-scm.com/downloads) (optional)
 
 ## Installation
@@ -67,69 +65,84 @@ node radarr.js
 ### First use
 Send the bot the `/auth` command with the password you created in `config.json`
 
+You will then be presented with the bot help.
+
+![radarr_bot_1](https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_1.png)
+
+
 ### Adding a series
 
 Send the bot a message with the series name
 
-`/q game of`
+`/q oldboy`
 
 The bot will reply with
 
 ```
-Found 6 series:
-1) Game of Crowns - 2014
-2) Game of Thrones - 2011
-3) Game of Silence
-4) Game of Silence (TR) - 2012
-5) The Genius Game - 2013
-6) More Than A Game - The Story of Football
+Found 3 movie(s):
+1) Oldboy - 2013
+2) Oldboy - 2003
+3) Oldboy - 2009
 ```
 
 Use the custom keyboard to select the series.
 
-![Step One](https://raw.githubusercontent.com/onedr0p/telegram-sonarr-bot/master/examples/step_1.png)
+![radarr_bot_2(https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_2.png)
 
-The bot will ask you for the quality
+The bot will load the movie description and ask you to confirm that you've selected the correct one.
+
+![radarr_bot_3](https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_3.png)
+
+The bot will ask you for the quality, the profiles will be pulled from your Radarr instance.
 
 ```
 Found 2 profiles:
-1) SD 2) HD
+1) Any
+2) SD
+3) HD-720p
+4) HD-1080p
+5) HD - 720p/1080p
 ```
 
 Send the profile using the custom keyboard
 
-![Step Two](https://raw.githubusercontent.com/onedr0p/telegram-sonarr-bot/master/examples/step_2.png)
+![radarr_bot_4](https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_4.png)
 
-The bot will ask you where the path you want the series to go
+If you have multiple storage paths, the bot will ask you where the path you want the movie to go.
+If you only have one path, this step is skipped.
 
 ```
 Found 2 folders:
-1) /Television/Airing/
-2) /Television/Archived/
+1) /movies/
+2) /movies2/
 ```
 
 Send the folder using the custom keyboard
 
-![Step Two](https://raw.githubusercontent.com/onedr0p/telegram-sonarr-bot/master/examples/step_3.png)
+![radrr_bot_5](https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_5.png)
 
-Lastly, the bot will ask you which seasons you would like to monitor/download
+
+Lastly, the bot will ask you whether to perform an immediate search or not.
 
 ```
-Select which seasons to monitor:
-1) future
-2) all
-3) none
-4) latest
-5) first
+Would you like to search for the movie now?
+1) Yes
+2) No
 ```
 
 Send the monitor type using the custom keyboard
 
-![Step Two](https://raw.githubusercontent.com/onedr0p/telegram-sonarr-bot/master/examples/step_4.png)
+![radarr_bot_6](https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_6.png)
+
 
 If everything goes well, you'll see a text from the bot saying the series was added.
 
-### Notifications
+![radarr_bot_7](https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_7.png)
+
+
+
+
+### Notifications - UNTESTED
 Radarr can be setup to send notifications to a user or a group chat when new content is added.  
 
 * In Radarr go to `Settings` > `Connect` > `+` > `Custom Script`
@@ -145,9 +158,9 @@ Radarr can be setup to send notifications to a user or a group chat when new con
 
 
 ### Additional commands
-* `/upcoming` shows upcoming movies, has a day parameter, defaults to 30 days
-* `/library <movie>` search Radarr library for existing movies
-* `/library` shows a list of all movies in the library *warning can be lots of output*
+* `/upcoming [days]` shows upcoming movies, has a day parameter, defaults to 30 days
+* `/library [movie]` search Radarr library for existing movies
+* `/library` shows a list of all movies in the library *warning can be lots of output and potentially cause rate limiting*
 * `/help` show available commands
 * `/clear` clear all previous commands and cache
 
@@ -161,21 +174,11 @@ Radarr can be setup to send notifications to a user or a group chat when new con
 * `/cid` gets current chat id
 
 ## Docker
-Alternatively you may use Docker to start the bot
+Alternatively you may use Docker to start the bot, when container is started, navigate to you /path/to/config and copy the config.json.template to config.json, edit it as required and restart the container.
+
 ```
-docker run --name telegram-radarr-bot \
-  -e TELEGRAM_BOTTOKEN=<TELEGRAM_BOTTOKEN> \
-  -e BOT_PASSWORD=<BOT_PASSWORD> \
-  -e BOT_OWNER=<BOT_OWNER> \
-  -e BOT_NOTIFYID=<BOT_NOTIFYID> \
-  -e BOT_MAXRESULTS=<BOT_MAXRESULTS> \
-  -e RADARR_HOST=<RADARR_HOST> \
-  -e RADARR_APIKEY=<RADARR_APIKEY> \
-  -e RADARR_PORT=<RADARR_PORT> \
-  -e RADARR_URLBASE=<RADARR_URLBASE> \
-  -e RADARR_SSL=<RADARR_SSL> \
-  -e RADARR_USERNAME=<RADARR_USERNAME> \
-  -e RADARR_PASSWORD=<RADARR_PASSWORD> \
+docker run --name telegram-radarr-bot -d \
+  --restart=always\
   -v /path/to/config:/config \
   telegram-radarr-bot
 ```
