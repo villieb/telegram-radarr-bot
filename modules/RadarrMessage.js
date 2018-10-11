@@ -166,24 +166,47 @@ RadarrMessage.prototype.performCalendarSearch = function(futureDays) {
     var fromDate = moment().toISOString();
     var toDate = moment().add(futureDays, 'day').toISOString();
 
-    logger.info(i18n.__('logRadarrUpcomingCommandSent', self.username, fromDate, toDate));
+    logger.debug(i18n.__('logRadarrUpcomingCommandSent', self.username, fromDate, toDate));
 
     self.radarr.get('calendar', { 'start': fromDate, 'end': toDate })
-        .then(function(episode) {
-            if(!episode.length) {
+        .then(function(movies) {
+            if(!movies.length) {
                 throw new Error(i18n.__('errorRadarrNothingInCalendar'));
             }
 
+            // decide which date to sort by and add as an additional field to the movie
+            // Also change fudge the status for the message (we want to change the new status on that date)
+            _.forEach(movies, function(movie, key) {
+              if (movie.status === "announced") {
+                movie.sortDate = movie.inCinemas
+                movie.status = i18n.__('RadarrInCinemas')
+              } else if(movie.status === "inCinemas"){
+                  movie.sortDate = movie.physicalRelease
+                  movie.status = i18n.__('RadarrPhysical')
+              }
+            })
+
+            // sort movies by sort date
+            movies.sort(function(a,b) {
+              var keyA = new Date(a.sortDate);
+              var keyB = new Date(b.sortDate);
+
+              if (keyA < keyB) return -1;
+              if (keyA > keyB) return 1;
+              return 0;
+            })
+
             var lastDate = null;
             var response = [];
-            _.forEach(episode, function(n, key) {
+            // construct response message
+            _.forEach(movies, function(n, key) {
                 var done = (n.hasFile ? i18n.__('RadarrDone') : '');
-                var niceDate = moment(n.physicalRelease).format("MMM Do YYYY");
-                logger.info(niceDate);
+                var niceDate = moment(n.sortDate).format("MMM Do YYYY");
+                logger.debug(niceDate + ' - ' + n.status + ' - ' + n.title + done);
 
                 // Add an empty line to break list of multiple days
                 // if(lastDate != null && n.airDate != lastDate) response.push(' ');
-                response.push(niceDate + ' - ' + n.title + done);
+                response.push(niceDate + ' - ' + n.status + ' - ' + n.title + done);
                 lastDate = n.airDate;
             });
 
