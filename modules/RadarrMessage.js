@@ -186,7 +186,7 @@ RadarrMessage.prototype.performCalendarSearch = function(futureDays) {
               }
             })
 
-            // sort movies by release date
+            // sort movies by sort date
             movies.sort(function(a,b) {
               var keyA = new Date(a.sortDate);
               var keyB = new Date(b.sortDate);
@@ -198,6 +198,7 @@ RadarrMessage.prototype.performCalendarSearch = function(futureDays) {
 
             var lastDate = null;
             var response = [];
+            // construct response message
             _.forEach(movies, function(n, key) {
                 var done = (n.hasFile ? i18n.__('RadarrDone') : '');
                 var niceDate = moment(n.sortDate).format("MMM Do YYYY");
