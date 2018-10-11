@@ -136,6 +136,8 @@
 	"botNotifySource Folder": "*Source Folder:* %s",
 	"botNotifyDestination": "*Destination:* %s",
 	"RadarrDone": " - *Downloaded*",
+	"RadarrInCinemas": "_In Cinemas_",
+	"RadarrPhysical": "_Physical_",
 	"globalAborted": "Aborted",
 	"globalArrowYes": "➸ Yes",
 	"globalArrowNo": "➸ No",
