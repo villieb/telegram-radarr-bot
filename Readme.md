@@ -87,7 +87,7 @@ Found 3 movie(s):
 
 Use the custom keyboard to select the series.
 
-![radarr_bot_2(https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_2.png)
+![radarr_bot_2](https://raw.githubusercontent.com/itsmegb/telegram-radarr-bot/master/examples/radarr_bot_2.png)
 
 The bot will load the movie description and ask you to confirm that you've selected the correct one.
 
