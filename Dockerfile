@@ -4,7 +4,7 @@ MAINTAINER itsmegb
 RUN apk add --update git
 
 RUN mkdir /app && \
-    git clone https://github.com/itsmegb/telegram-radarr-bot.git /app
+    git clone https://github.com/nwesthoff/telegram-radarr-bot.git /app
 
 WORKDIR /app
 
