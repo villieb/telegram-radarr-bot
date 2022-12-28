@@ -429,7 +429,7 @@ RadarrMessage.prototype.sendProfileList = function (displayName) {
   // get the radarr profiles
   workflow.on("getRadarrProfiles", function () {
     self.radarr
-      .get("profile")
+      .get("qualityprofile")
       .then(function (result) {
         if (!result.length) {
           throw new Error(i18n.__("errorRadarrCouldntGetProfile"));
